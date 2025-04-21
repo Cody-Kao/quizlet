@@ -1,0 +1,178 @@
+@import "tailwindcss";
+:root {
+  --light-theme-color: #4255ff;
+  --light-theme-opacity-color: rgba(66, 85, 255, 0.8);
+}
+
+/* "*"為最高優先級 */
+* {
+  font-family: Poppins, "Times New Roman", Times, serif;
+}
+
+body {
+  color: #586380;
+}
+
+@media (min-width: 600px) {
+  .sm-screen {
+    display: block;
+  }
+}
+@media (max-width: 450px) {
+  .sm-screen {
+    display: block;
+  }
+}
+
+.light-hover:hover {
+  background-color: #e5e7eb;
+}
+
+.light-hover-lighter:hover {
+  background-color: #f3f4f6;
+}
+
+/*nav link 被選中時*/
+.light-nav-color {
+  color: #4255ff;
+}
+
+.light-nav-bg-color {
+  background-color: rgba(66, 85, 255, 0.1);
+}
+
+.light-title {
+  color: #586380;
+  font-weight: bold;
+}
+
+.light-content {
+  color: #282e3e;
+  font-weight: bold;
+}
+
+.light-content-normal {
+  color: #282e3e;
+  font-weight: normal;
+}
+
+.light-content-small {
+  color: #586380;
+}
+
+.side-bar {
+  display: flex;
+}
+
+@media (max-width: 970px) {
+  .side-bar {
+    display: none;
+  }
+}
+
+.hover-tag {
+  position: relative;
+}
+
+.hover-tag::after {
+  content: attr(data-label); /* Get content from data-label attribute */
+  background-color: #000;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  position: absolute;
+  left: 120%; /* Align to the right of the icon */
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap; /* Prevents wrapping */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease-in-out,
+    visibility 0.2s ease-in-out;
+}
+
+.hover-tag:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.two-by-two-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 870px) {
+  .two-by-two-grid {
+    grid-template-columns: 1fr; /* single column */
+    grid-template-rows: auto; /* let rows adjust to content */
+    grid-auto-flow: row; /* ensure items flow in rows */
+  }
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px; /* Ensures no layout shift */
+  background-color: transparent;
+}
+
+.card:hover::after {
+  background-color: #4255ff; /* Hover border */
+  opacity: 0.5;
+}
+
+/* hide logo when width is less than 375px */
+.hideLogo {
+  display: block;
+}
+.expandSearchBar {
+  margin-left: 2.5rem;
+}
+@media (max-width: 375px) {
+  .hideLogo {
+    display: none;
+  }
+  .expandSearchBar {
+    margin-left: 0;
+  }
+}
+
+/* login modal form height */
+.loginModalHeight {
+  height: 85%;
+}
+@media (min-height: 680px) {
+  .loginModalHeight {
+    height: 90%;
+  }
+}
+@media (min-height: 750px) {
+  .loginModalHeight {
+    height: 60%;
+  }
+}
+@media (min-height: 1050px) {
+  .loginModalHeight {
+    height: 50%;
+  }
+}
+
+/* scroll bar */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
