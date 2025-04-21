@@ -27,7 +27,6 @@ const logInContext = createContext<LogInContextProviderType | undefined>(
 );
 
 export const useLogInContextProvider = () => {
-  console.log("useLogInContextProvider!!");
   const context = useContext(logInContext);
   if (context === undefined) {
     throw new Error("context is undefined!");
@@ -66,7 +65,6 @@ export default function LogInContextProvider({
       }
       return;
     }
-    console.log("useEffect check log in");
     getRequest<FrontEndUser>(
       `${PATH}/checkLogIn`,
       z.object({
@@ -89,7 +87,6 @@ export default function LogInContextProvider({
         setIsChecking(false);
       });
   }, [user, currentPath]);
-  console.log("check log in from context", user);
   return (
     <>
       <logInContext.Provider
