@@ -7,7 +7,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-var PATH = "http://localhost:5173" // frontend url
+var FrontendPATH = os.Getenv("FrontendPATH") // frontend url
 var ADMINID = os.Getenv("go_quizlet_admin_id")
 var ADMINNAME = os.Getenv("go_quizlet_admin_name")
 
