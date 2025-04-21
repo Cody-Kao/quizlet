@@ -146,7 +146,7 @@ export default function MailBox({
                     <span className="relative after:absolute after:right-[-20%] after:bottom-[50%] after:h-[18px] after:w-[2px] after:translate-y-[50%] after:bg-black after:content-['']">
                       寄件者
                     </span>
-                    <UserLink userID={ADMIN.userID} />
+                    <UserLink userID={ADMIN.id} />
                   </div>
                   <div className="flex flex-wrap items-center">
                     <p className="text-[1.5rem] font-bold">{data.title}</p>

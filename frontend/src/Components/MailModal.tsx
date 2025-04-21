@@ -86,7 +86,7 @@ export default function MailModal({
 
                 <div className="flex items-center">
                   <span>寄件者:&nbsp;</span>
-                  <UserLink userID={ADMIN.userID} />
+                  <UserLink userID={ADMIN.id} />
                 </div>
               </div>
             </div>
