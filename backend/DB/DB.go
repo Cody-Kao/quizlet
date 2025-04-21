@@ -3,7 +3,7 @@ package DB
 import (
 	"context"
 	"fmt"
-	"os"
+	"go-quizlet/Consts"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,7 +17,7 @@ var err error
 func InitDB() {
 	// Use the SetServerAPIOptions() method to set the version of the Stable API on the client
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(os.Getenv("mongoDB_uri")).SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(Consts.MongoDB_uri).SetServerAPIOptions(serverAPI)
 
 	// 最多10秒的連線
 	ConnectContext, cancel := context.WithTimeout(context.Background(), 10 * time.Second)

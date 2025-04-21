@@ -7,6 +7,8 @@ import (
 	"golang.org/x/time/rate"
 )
 
+var PORT = os.Getenv("PORT")
+var MongoDB_uri = os.Getenv("mongoDB_uri")
 var FrontendPATH = os.Getenv("FrontendPATH") // frontend url
 var ADMINID = os.Getenv("go_quizlet_admin_id")
 var ADMINNAME = os.Getenv("go_quizlet_admin_name")
