@@ -207,7 +207,7 @@ func SetJTWCookie(w http.ResponseWriter, tokenString string, expireTime time.Tim
 		Path:     "/",
 		HttpOnly: true,  // Prevents JavaScript access (protects against XSS)
 		Secure:   true,  // Ensures cookie is only sent over HTTPS
-		SameSite: http.SameSiteStrictMode, // Prevents CSRF attacks
+		SameSite: http.SameSiteNoneMode, // 如果是strict mode就能Prevents CSRF attacks，但用CORS去檔也可以
 		Expires:  expireTime,
 	})
 }
