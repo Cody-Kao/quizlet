@@ -1,8 +1,7 @@
-import { UserLinkType } from "../Types/types.ts";
-
-export const ADMIN: UserLinkType = {
-  userID: import.meta.env.VITE_ADMINID,
-  userName: import.meta.env.VITE_ADMINNAME,
+export const ADMIN = {
+  id: import.meta.env.VITE_ADMINID,
+  role: "admin",
+  name: import.meta.env.VITE_ADMINNAME,
 };
 
 export const CURPATH = import.meta.env.VITE_CURPATH;
