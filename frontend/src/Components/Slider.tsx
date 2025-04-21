@@ -57,13 +57,13 @@ export default function CardSlider<T extends SliderDateType>({
           {/* Navigation buttons */}
           <button
             onClick={(e) => handlePrev(e)}
-            className={`${cards.length <= visibleCards ? "pointer-events-none" : ""} absolute top-[50%] left-[10px] z-10 flex h-[90%] w-[40px] translate-y-[-50%] items-center justify-center bg-white/30 text-gray-500 hover:scale-120 hover:cursor-pointer hover:text-gray-600 sm:text-gray-300`}
+            className={`${cards.length <= visibleCards ? "pointer-events-none" : ""} absolute top-[50%] left-[10px] z-10 flex h-[90%] w-[30px] translate-y-[-50%] items-center justify-center bg-white/30 text-gray-500 hover:scale-120 hover:cursor-pointer hover:text-gray-600 sm:w-[40px] sm:text-gray-300`}
           >
             <ChevronLeft />
           </button>
           <button
             onClick={(e) => handleNext(e)}
-            className={`${cards.length <= visibleCards ? "pointer-events-none" : ""} absolute top-[50%] right-[10px] z-10 flex h-[90%] w-[40px] translate-y-[-50%] items-center justify-center bg-white/30 text-gray-500 hover:scale-120 hover:cursor-pointer hover:text-gray-600 sm:text-gray-300`}
+            className={`${cards.length <= visibleCards ? "pointer-events-none" : ""} absolute top-[50%] right-[10px] z-10 flex h-[90%] w-[30px] translate-y-[-50%] items-center justify-center bg-white/30 text-gray-500 hover:scale-120 hover:cursor-pointer hover:text-gray-600 sm:w-[40px] sm:text-gray-300`}
           >
             <ChevronRight />
           </button>
