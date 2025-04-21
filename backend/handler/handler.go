@@ -11,6 +11,7 @@ import (
 	"go-quizlet/utils"
 	"log"
 	"net"
+	"os"
 	"slices"
 	"sort"
 	"strconv"
@@ -902,7 +903,10 @@ func PostValidateWordSetAuthor[T Type.WordSetsRelatedRequest](handlerFunc func(T
 func EnableCORS(next http.Handler) http.Handler {
 	// 包http.HandlerFunc()，讓裡面func(w http.ResponseWriter, r *http.Request) AKA HandlerFunc 變http.Handler
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		allowedOrigin := Consts.FrontendPATH // Change to your frontend URL
+		allowedOrigin := os.Getenv("FrontendPATH") // Change to your frontend URL
+		if allowedOrigin == "" {
+			allowedOrigin = "http://localhost:5173"
+		}
 		origin := r.Header.Get("Origin")
 		fmt.Println(origin)
 		if origin == allowedOrigin {
@@ -2762,7 +2766,8 @@ func sendActivationEmail(w http.ResponseWriter, r *http.Request) {
 
 	// sending email activation link, with 10s timeout
 	token := utils.GenerateID()
-	sendingEmailErr := utils.SendEmailWithTimeout("template/activateEmail.html", "電子郵件開通驗證", request.Email, fmt.Sprintf("%s/activateEmail/%s", Consts.FrontendPATH, token), 10*time.Second)
+	frontendPath := os.Getenv("FrontendPATH")
+	sendingEmailErr := utils.SendEmailWithTimeout("template/activateEmail.html", "電子郵件開通驗證", request.Email, fmt.Sprintf("%s/activateEmail/%s", frontendPath, token), 10*time.Second)
 	if sendingEmailErr != nil {
 		writeErrorJson(w, Type.MessageDisplayError{Message: sendingEmailErr.Error()})
 		return

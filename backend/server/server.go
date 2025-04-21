@@ -2,14 +2,14 @@ package server
 
 import (
 	"fmt"
-	"go-quizlet/Consts"
 	"go-quizlet/handler"
 	"net/http"
+	"os"
 	"time"
 )
 
 func CreateServer() *http.Server {
-	port := Consts.PORT
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "5000" // fallback for local dev
 	}
