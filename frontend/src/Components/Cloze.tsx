@@ -58,12 +58,14 @@ export default function Cloze() {
   }, [wordSet, curQuestionIndex]);
 
   // 結算的答題紀錄(紀錄那些問題是答錯的 並給出正確答案)
-  const [gradeForAll, setGradeForAll, removeGradeForAll] = useLocalStorage<
-    gradeType[]
-  >(`${wordSet.id}-clozeGradeForAll`, []);
-  const [gradeForStar, setGradeForStar, removeGradeForStar] = useLocalStorage<
-    gradeType[]
-  >(`${wordSet.id}-clozeGradeForStar`, []);
+  const [gradeForAll, setGradeForAll] = useLocalStorage<gradeType[]>(
+    `${wordSet.id}-clozeGradeForAll`,
+    [],
+  );
+  const [gradeForStar, setGradeForStar] = useLocalStorage<gradeType[]>(
+    `${wordSet.id}-clozeGradeForStar`,
+    [],
+  );
 
   useEffect(() => {
     let newWords = wordSet.shouldSwap
@@ -193,16 +195,18 @@ export default function Cloze() {
   };
 
   // 紀錄玩家選擇過的結果，上面是給全選的，下面是給星號的
-  const [clozeRecordForAll, setClozeRecordForAll, removeClozeRecordForAll] =
-    useLocalStorage<clozeRecordType[]>(
-      `${wordSet.id}-clozeRecordForAll`,
-      Array(wordSet.words.length).fill(null), // 初始化全為null
-    );
-  const [clozeRecordForStar, setClozeRecordForStar, removeClozeRecordForStar] =
-    useLocalStorage<clozeRecordType[]>(
-      `${wordSet.id}-clozeRecordForStar`,
-      Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
-    );
+  const [clozeRecordForAll, setClozeRecordForAll] = useLocalStorage<
+    clozeRecordType[]
+  >(
+    `${wordSet.id}-clozeRecordForAll`,
+    Array(wordSet.words.length).fill(null), // 初始化全為null
+  );
+  const [clozeRecordForStar, setClozeRecordForStar] = useLocalStorage<
+    clozeRecordType[]
+  >(
+    `${wordSet.id}-clozeRecordForStar`,
+    Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
+  );
 
   // 處理選擇後的動畫/紀錄選擇後的結果
   const allAnswered = onlyStar

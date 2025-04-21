@@ -103,22 +103,26 @@ export default function MultiChoice() {
     return questions;
   };
 
-  const [questions, setQuestions, RemoveQuestions] = useLocalStorage<
-    multiChoiceQuestion[]
-  >(`${wordSet.id}-questions`, []);
-  const [allQuestions, setAllQuestions, RemoveAllQuestions] = useLocalStorage<
+  const [questions, setQuestions] = useLocalStorage<multiChoiceQuestion[]>(
+    `${wordSet.id}-questions`,
+    [],
+  );
+  const [allQuestions, setAllQuestions] = useLocalStorage<
     multiChoiceQuestion[]
   >(`${wordSet.id}-allQuestions`, []);
-  const [starQuestions, setStarQuestions, RemoveStarQuestions] =
-    useLocalStorage<multiChoiceQuestion[]>(`${wordSet.id}-starQuestions`, []);
+  const [starQuestions, setStarQuestions] = useLocalStorage<
+    multiChoiceQuestion[]
+  >(`${wordSet.id}-starQuestions`, []);
 
   // 結算的答題紀錄(紀錄那些問題是答錯的 並給出正確答案)
-  const [gradeForAll, setGradeForAll, removeGradeForAll] = useLocalStorage<
-    gradeType[]
-  >(`${wordSet.id}-gradeForAll`, []);
-  const [gradeForStar, setGradeForStar, removeGradeForStar] = useLocalStorage<
-    gradeType[]
-  >(`${wordSet.id}-gradeForStar`, []);
+  const [gradeForAll, setGradeForAll] = useLocalStorage<gradeType[]>(
+    `${wordSet.id}-gradeForAll`,
+    [],
+  );
+  const [gradeForStar, setGradeForStar] = useLocalStorage<gradeType[]>(
+    `${wordSet.id}-gradeForStar`,
+    [],
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   // 處理初始化words以及所有questions 以及當words改變時也改變words和所有questions
@@ -253,22 +257,17 @@ export default function MultiChoice() {
   };
 
   // 紀錄玩家選擇過的結果，上面是給全選的，下面是給星號的
-  const [
-    multiChoiceRecordForAll,
-    setMultiChoiceRecordForAll,
-    removeMultiChoiceRecordForAll,
-  ] = useLocalStorage<multiChoiceRecordType[]>(
+  const [multiChoiceRecordForAll, setMultiChoiceRecordForAll] = useLocalStorage<
+    multiChoiceRecordType[]
+  >(
     `${wordSet.id}-multiChoiceRecordForAll`,
     Array(wordSet.words.length).fill(null), // 初始化全為null
   );
-  const [
-    multiChoiceRecordForStar,
-    setMultiChoiceRecordForStar,
-    removeMultiChoiceRecordForStar,
-  ] = useLocalStorage<multiChoiceRecordType[]>(
-    `${wordSet.id}-multiChoiceRecordForStar`,
-    Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
-  );
+  const [multiChoiceRecordForStar, setMultiChoiceRecordForStar] =
+    useLocalStorage<multiChoiceRecordType[]>(
+      `${wordSet.id}-multiChoiceRecordForStar`,
+      Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
+    );
 
   // 處理選擇後的動畫/紀錄選擇後的結果
   const allAnswered = onlyStar

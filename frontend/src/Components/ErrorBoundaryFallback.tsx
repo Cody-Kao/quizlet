@@ -6,10 +6,7 @@ import { formatTimeToSeconds } from "../Utils/utils";
 import { LogErrorRequest } from "../Types/request";
 import { useLogInContextProvider } from "../Context/LogInContextProvider";
 import { useEffect, useMemo } from "react";
-export default function ErrorBoundaryFallback({
-  error,
-  resetErrorBoundary,
-}: FallbackProps) {
+export default function ErrorBoundaryFallback({ error }: FallbackProps) {
   const { user } = useLogInContextProvider();
   const errorID = useMemo(() => {
     return uuid();
