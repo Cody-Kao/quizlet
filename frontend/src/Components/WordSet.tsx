@@ -495,13 +495,13 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
               </h2>
               <div className="ml-auto flex h-[30px] min-w-max items-center justify-center gap-4 border-b-2 border-gray-300 text-black">
                 <span
-                  className={`relative text-[.8rem] font-bold after:absolute after:top-[110%] after:left-[50%] after:h-[2px] after:w-full after:translate-x-[-50%] sm:text-[1rem] ${displayAllWords ? "after:bg-[var(--light-theme-color)]" : ""} after:content-[''] hover:cursor-pointer`}
+                  className={`relative text-[.8rem] font-bold after:absolute after:top-[120%] after:left-[50%] after:h-[2px] after:w-full after:translate-x-[-50%] sm:text-[1rem] sm:after:top-[105%] ${displayAllWords ? "after:bg-[var(--light-theme-color)]" : ""} after:content-[''] hover:cursor-pointer`}
                   onClick={() => setDisplayAllWords(true)}
                 >
                   全部
                 </span>
                 <span
-                  className={`${sortedStarWords.length === 0 ? "pointer-events-none opacity-50 grayscale" : ""} relative text-[.8rem] font-bold after:absolute after:top-[110%] after:left-[50%] after:h-[2px] after:w-full after:translate-x-[-50%] sm:text-[1rem] ${displayAllWords ? "" : "after:bg-[var(--light-theme-color)]"} after:content-[''] hover:cursor-pointer`}
+                  className={`${sortedStarWords.length === 0 ? "pointer-events-none opacity-50 grayscale" : ""} relative text-[.8rem] font-bold after:absolute after:top-[120%] after:left-[50%] after:h-[2px] after:w-full after:translate-x-[-50%] sm:text-[1rem] sm:after:top-[105%] ${displayAllWords ? "" : "after:bg-[var(--light-theme-color)]"} after:content-[''] hover:cursor-pointer`}
                   onClick={() => setDisplayAllWords(false)}
                 >
                   星號詞語({sortedStarWords.length})

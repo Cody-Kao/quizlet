@@ -112,7 +112,7 @@ export default function NavBar({
             className="hideLogo sm-screen z-10 hidden hover:cursor-pointer"
           >
             <img
-              className="h-full w-auto max-w-[2.5rem] scale-[120%] bg-contain bg-no-repeat object-center"
+              className="h-[2.6rem] w-auto max-w-[2.5rem] scale-[120%] bg-contain bg-no-repeat object-center"
               src="/image/logo.png"
               alt="Logo"
             />
