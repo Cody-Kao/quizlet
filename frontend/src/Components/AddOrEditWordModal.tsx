@@ -218,7 +218,7 @@ export default function AddOrEditWordModal({
       {/* modal */}
 
       <div
-        className={`${isModalOpen ? "visible top-[50%] opacity-100" : "invisible top-[40%] opacity-0"} fixed left-[50%] z-1000 flex h-[350px] w-[90%] max-w-[380px] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 rounded-2xl bg-white p-8 transition-all duration-300 sm:max-h-[450px] sm:max-w-[630px] sm:p-12 lg:max-h-[480px] lg:max-w-[800px]`}
+        className={`${isModalOpen ? "visible top-[50%] opacity-100" : "invisible top-[40%] opacity-0"} fixed left-[50%] z-1000 flex max-h-[350px] w-[90%] max-w-[380px] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 rounded-2xl bg-white p-8 transition-all duration-300 sm:max-h-[450px] sm:max-w-[630px] sm:p-12 lg:max-h-[480px] lg:max-w-[800px]`}
       >
         {/* cross button */}
         <button

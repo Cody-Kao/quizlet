@@ -18,6 +18,7 @@ import {
 } from "../Types/types";
 import Loader from "./Loader";
 import GradeModal from "./GradeModal";
+import { createPortal } from "react-dom";
 
 export default function MultiChoice() {
   const onMountRef = useRef<boolean>(true); // 第一次mount時候是true，可以當作一個guard防止useEffect執行
@@ -433,38 +434,43 @@ export default function MultiChoice() {
   return (
     <>
       {/* overlay for grade modal */}
-      <div
-        onClick={() => {
-          setIsGradeModalOpen(false);
-        }}
-        className={`${isGradeModalOpen ? "visible opacity-[.3]" : "invisible opacity-0"} fixed inset-0 z-1000 h-full w-full bg-black transition-opacity duration-300 ease-in-out`}
-      ></div>
+      {createPortal(
+        <>
+          <div
+            onClick={() => {
+              setIsGradeModalOpen(false);
+            }}
+            className={`${isGradeModalOpen ? "visible opacity-[.3]" : "invisible opacity-0"} fixed inset-0 z-1000 h-full w-full bg-black transition-opacity duration-300 ease-in-out`}
+          ></div>
 
-      <GradeModal
-        isOpen={isGradeModalOpen}
-        correctCnt={
-          onlyStar
-            ? questions.length -
-              multiChoiceRecordForStar.reduce(
-                (prev, choice) =>
-                  prev + (choice !== null ? (choice.isCorrect ? 0 : 1) : 1),
-                0,
-              )
-            : questions.length -
-              multiChoiceRecordForAll.reduce(
-                (prev, choice) =>
-                  prev + (choice !== null ? (choice.isCorrect ? 0 : 1) : 1),
-                0,
-              )
-        }
-        total={questions.length}
-        grades={
-          onlyStar
-            ? gradeForStar.sort((a, b) => a.numOfQuestion - b.numOfQuestion)
-            : gradeForAll.sort((a, b) => a.numOfQuestion - b.numOfQuestion)
-        }
-        callback={() => setIsGradeModalOpen(false)}
-      />
+          <GradeModal
+            isOpen={isGradeModalOpen}
+            correctCnt={
+              onlyStar
+                ? questions.length -
+                  multiChoiceRecordForStar.reduce(
+                    (prev, choice) =>
+                      prev + (choice !== null ? (choice.isCorrect ? 0 : 1) : 1),
+                    0,
+                  )
+                : questions.length -
+                  multiChoiceRecordForAll.reduce(
+                    (prev, choice) =>
+                      prev + (choice !== null ? (choice.isCorrect ? 0 : 1) : 1),
+                    0,
+                  )
+            }
+            total={questions.length}
+            grades={
+              onlyStar
+                ? gradeForStar.sort((a, b) => a.numOfQuestion - b.numOfQuestion)
+                : gradeForAll.sort((a, b) => a.numOfQuestion - b.numOfQuestion)
+            }
+            callback={() => setIsGradeModalOpen(false)}
+          />
+        </>,
+        document.body,
+      )}
 
       {/* 在播放時要放置overlay 以防user亂按 */}
       {isAnimating && (
