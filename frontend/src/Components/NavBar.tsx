@@ -113,7 +113,7 @@ export default function NavBar({
           >
             <img
               className="h-full w-auto max-w-[2.5rem] scale-[120%] bg-contain bg-no-repeat object-center"
-              src="../public/image/logo.png"
+              src="/image/logo.png"
               alt="Logo"
             />
           </Link>
