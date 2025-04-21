@@ -902,7 +902,7 @@ func PostValidateWordSetAuthor[T Type.WordSetsRelatedRequest](handlerFunc func(T
 func EnableCORS(next http.Handler) http.Handler {
 	// 包http.HandlerFunc()，讓裡面func(w http.ResponseWriter, r *http.Request) AKA HandlerFunc 變http.Handler
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		allowedOrigin := "http://localhost:5173" // Change to your frontend URL
+		allowedOrigin := Consts.FrontendPATH // Change to your frontend URL
 		origin := r.Header.Get("Origin")
 		fmt.Println(origin)
 		if origin == allowedOrigin {
