@@ -2770,7 +2770,7 @@ func sendActivationEmail(w http.ResponseWriter, r *http.Request) {
 	token := utils.GenerateID()
 	frontendPath := os.Getenv("FrontendPATH")
 	cwd, _ := os.Getwd()
-	path := filepath.Join(cwd, "template/activateEmail.html")
+	path := filepath.Join(cwd, "template/ActivateEmail.html")
 	sendingEmailErr := utils.SendEmailWithTimeout(path, "電子郵件開通驗證", request.Email, fmt.Sprintf("%s/activateEmail/%s", frontendPath, token), 10*time.Second)
 	if sendingEmailErr != nil {
 		writeErrorJson(w, Type.MessageDisplayError{Message: sendingEmailErr.Error()})
