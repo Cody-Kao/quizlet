@@ -326,7 +326,7 @@ export default function LogInModal() {
             <div
               className={`${accountError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
-              <div className="flex w-[15%] items-center justify-center">
+              <div className="flex w-[10%] items-center justify-center">
                 <FaRegUser />
               </div>
               <input
@@ -340,7 +340,7 @@ export default function LogInModal() {
                 type="email"
               />
               {accountError !== "" && (
-                <span className="absolute top-[120%] left-0 text-[.8rem] text-red-500">
+                <span className="absolute top-[110%] left-0 text-[.8rem] text-red-500">
                   {accountError}
                 </span>
               )}
@@ -349,7 +349,7 @@ export default function LogInModal() {
             <div
               className={`${passwordError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative mt-3 flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
-              <div className="flex w-[15%] items-center justify-center">
+              <div className="flex w-[10%] items-center justify-center">
                 <CiLock className="stroke-1 text-[1.2rem]" />
               </div>
               <input
@@ -363,7 +363,7 @@ export default function LogInModal() {
                 type="text"
               />
               {passwordError !== "" && (
-                <span className="absolute top-[120%] left-0 text-[.8rem] text-red-500">
+                <span className="absolute top-[110%] left-0 text-[.8rem] text-red-500">
                   {passwordError}
                 </span>
               )}
@@ -401,7 +401,7 @@ export default function LogInModal() {
               onClick={() => {
                 handleSliding();
               }}
-              className="right-[5px] bottom-0 mt-auto ml-auto flex items-center gap-1 hover:cursor-pointer sm:absolute"
+              className="right-[5px] bottom-0 mt-auto ml-auto flex items-center gap-1 text-[.8rem] hover:cursor-pointer sm:absolute sm:text-[1rem]"
             >
               點我去註冊
               <FaArrowRight />
@@ -410,14 +410,14 @@ export default function LogInModal() {
           {/* 註冊 */}
           <form
             onSubmit={(e) => handleAccountPasswordRegister(e)}
-            className={`absolute top-0 left-0 flex h-full w-full flex-col items-center gap-4 overflow-y-auto rounded-lg bg-white p-4 transition-all duration-300 ease-in-out sm:gap-7 sm:rounded-2xl ${isSliding ? "visible translate-x-0" : "invisible translate-x-[20%]"}`}
+            className={`absolute top-0 left-0 flex h-full w-full flex-col items-center gap-5 rounded-lg bg-white p-4 transition-all duration-300 ease-in-out sm:gap-7 sm:rounded-2xl ${isSliding ? "visible translate-x-0" : "invisible translate-x-[20%]"}`}
           >
             <h1 className="text-[2rem] font-bold text-black">Register</h1>
             {/* 使用者名稱 */}
             <div
               className={`${nameError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
-              <div className="flex w-[15%] items-center justify-center">
+              <div className="flex w-[10%] items-center justify-center">
                 <MdOutlineDriveFileRenameOutline className="text-[1.2rem]" />
               </div>
               <input
@@ -431,7 +431,7 @@ export default function LogInModal() {
                 type="text"
               />
               {nameError !== "" && (
-                <span className="absolute top-[120%] left-0 text-[.8rem] text-red-500">
+                <span className="absolute top-[100%] left-0 text-[.8rem] text-red-500 sm:top-[110%]">
                   {nameError}
                 </span>
               )}
@@ -440,7 +440,7 @@ export default function LogInModal() {
             <div
               className={`${accountError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
-              <div className="flex w-[15%] items-center justify-center">
+              <div className="flex w-[10%] items-center justify-center">
                 <FaRegUser />
               </div>
               <input
@@ -450,7 +450,7 @@ export default function LogInModal() {
                 }}
                 value={account}
                 placeholder="請輸入帳號(電子郵件)"
-                className="w-[60%] outline-none"
+                className="flex flex-grow outline-none"
                 type="text"
               />
               <button
@@ -464,7 +464,7 @@ export default function LogInModal() {
                 {secondsLeft > 0 ? `${secondsLeft}秒` : "驗證信箱"}
               </button>
               {accountError !== "" && (
-                <span className="absolute top-[120%] left-0 text-[.8rem] text-red-500">
+                <span className="absolute top-[100%] left-0 text-[.8rem] text-red-500 sm:top-[110%]">
                   {accountError}
                 </span>
               )}
@@ -473,7 +473,7 @@ export default function LogInModal() {
             <div
               className={`${passwordError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
-              <div className="flex w-[15%] items-center justify-center">
+              <div className="flex w-[10%] items-center justify-center">
                 <CiLock className="stroke-1 text-[1.2rem]" />
               </div>
               <input
@@ -487,7 +487,7 @@ export default function LogInModal() {
                 type="text"
               />
               {passwordError !== "" && (
-                <span className="absolute top-[120%] left-0 text-[.8rem] text-red-500">
+                <span className="absolute top-[100%] left-0 text-[.8rem] text-red-500 sm:top-[110%]">
                   {passwordError}
                 </span>
               )}
@@ -497,7 +497,7 @@ export default function LogInModal() {
             <div
               className={`${rePasswordError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
-              <div className="flex w-[15%] items-center justify-center">
+              <div className="flex w-[10%] items-center justify-center">
                 <CiLock className="stroke-1 text-[1.2rem]" />
               </div>
               <input
@@ -511,7 +511,7 @@ export default function LogInModal() {
                 type="text"
               />
               {rePasswordError !== "" && (
-                <span className="absolute top-[120%] left-0 text-[.8rem] text-red-500">
+                <span className="absolute top-[100%] left-0 text-[.8rem] text-red-500 sm:top-[110%]">
                   {rePasswordError}
                 </span>
               )}
@@ -542,7 +542,7 @@ export default function LogInModal() {
               onClick={() => {
                 handleSliding();
               }}
-              className="absolute bottom-0 left-[5px] ml-auto flex items-center gap-1 hover:cursor-pointer"
+              className="fixed bottom-0 left-[5px] ml-auto flex items-center gap-1 text-[.8rem] hover:cursor-pointer sm:text-[1rem]"
             >
               <FaArrowLeft />
               點我去登入

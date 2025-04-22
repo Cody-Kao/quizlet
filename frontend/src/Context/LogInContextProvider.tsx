@@ -48,6 +48,7 @@ export default function LogInContextProvider({
   const [isLogIn, setIsLogin] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState(true); // New state to track async check
   const [unreadMails, setUnreadMails] = useState(0);
+  const [firstMount, setFirstMount] = useState(true); // 管理是否為first mount
 
   const setLogIn = () => {
     setIsLogin(true);
@@ -65,6 +66,7 @@ export default function LogInContextProvider({
       }
       return;
     }
+    setFirstMount(false);
     getRequest<FrontEndUser>(
       `${PATH}/checkLogIn`,
       z.object({
@@ -81,6 +83,7 @@ export default function LogInContextProvider({
         setUser(data);
       })
       .catch((error) => {
+        if (!firstMount) return;
         setNotice(error as NoticeDisplay);
       })
       .finally(() => {
