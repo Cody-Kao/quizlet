@@ -2566,7 +2566,7 @@ func requestValidateCode(w http.ResponseWriter, r *http.Request) {
 		writeErrorJson(w, Type.MessageDisplayError{Message: "資料庫查詢錯誤 請重試"})
 		return 
 	}
-	if record.Expire > utils.GetNow() + int64(Consts.MinResendTimeBuffer) {
+	if record.Expire - int64(Consts.MinResendTimeBuffer) > utils.GetNow() {
 		writeErrorJson(w, Type.MessageDisplayError{Message: "請勿在3分鐘內重複申請驗證碼"})
 		return 
 	}
@@ -2753,7 +2753,7 @@ func sendActivationEmail(w http.ResponseWriter, r *http.Request) {
 	activateEmailColl := DB.Client.Database("go-quizlet").Collection("activateEmail")
 	err = activateEmailColl.FindOne(ctx, filter).Decode(&record)
 	if err == nil {
-		if record.Expire > utils.GetNow() + int64(Consts.MinActivateEmailExpire) {
+		if record.Expire - int64(Consts.MinActivateEmailExpire) > utils.GetNow() {
 			writeErrorJson(w, Type.MessageDisplayError{Message: "請勿在3分鐘內重複請求"})
 			return
 		}
