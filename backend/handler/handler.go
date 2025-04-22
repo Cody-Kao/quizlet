@@ -12,6 +12,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"path/filepath"
 	"slices"
 	"sort"
 	"strconv"
@@ -2582,8 +2583,9 @@ func requestValidateCode(w http.ResponseWriter, r *http.Request) {
 	} else {
 		emailTitle = "更改密碼-驗證碼"
 	}
-	
-	err = utils.SendEmailWithTimeout("template/ResetPassword.html", emailTitle, request.Email, strconv.Itoa(validateCode), 10*time.Second)
+	cwd, _ := os.Getwd()
+	path := filepath.Join(cwd, "template/ResetPassword.html")
+	err = utils.SendEmailWithTimeout(path, emailTitle, request.Email, strconv.Itoa(validateCode), 10*time.Second)
 	if err != nil {
 		writeErrorJson(w, Type.MessageDisplayError{Message: err.Error()})
 		return
@@ -2767,7 +2769,9 @@ func sendActivationEmail(w http.ResponseWriter, r *http.Request) {
 	// sending email activation link, with 10s timeout
 	token := utils.GenerateID()
 	frontendPath := os.Getenv("FrontendPATH")
-	sendingEmailErr := utils.SendEmailWithTimeout("template/activateEmail.html", "電子郵件開通驗證", request.Email, fmt.Sprintf("%s/activateEmail/%s", frontendPath, token), 10*time.Second)
+	cwd, _ := os.Getwd()
+	path := filepath.Join(cwd, "template/activateEmail.html")
+	sendingEmailErr := utils.SendEmailWithTimeout(path, "電子郵件開通驗證", request.Email, fmt.Sprintf("%s/activateEmail/%s", frontendPath, token), 10*time.Second)
 	if sendingEmailErr != nil {
 		writeErrorJson(w, Type.MessageDisplayError{Message: sendingEmailErr.Error()})
 		return
