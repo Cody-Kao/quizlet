@@ -288,7 +288,7 @@ func UploadToImgur(file io.Reader, filename string) (*Type.ImgurResponse, error)
 
 func SendEmailWithTimeout(htmlPath, mailTitle, toMail, data string, timeout time.Duration) error {
 	errChan := make(chan error, 1)
-
+	log.Println("sending to:",toMail)
 	go func() {
 		errChan <- SendEmail(htmlPath, mailTitle, toMail, data)
 	}()
