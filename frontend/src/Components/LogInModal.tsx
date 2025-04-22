@@ -338,7 +338,7 @@ export default function LogInModal() {
                 }}
                 value={account}
                 placeholder="請輸入帳號(電子郵件)"
-                className="w-[85%] outline-none"
+                className="w-[85%] text-[.8rem] outline-none sm:text-[1rem]"
                 type="email"
               />
               {accountError !== "" && (
@@ -361,7 +361,7 @@ export default function LogInModal() {
                 }}
                 value={password}
                 placeholder="請輸入密碼"
-                className="w-[85%] outline-none"
+                className="w-[85%] text-[.8rem] outline-none sm:text-[1rem]"
                 type="text"
               />
               {passwordError !== "" && (
@@ -431,7 +431,7 @@ export default function LogInModal() {
                 }}
                 value={name}
                 placeholder="請輸入使用者名稱"
-                className="w-[85%] outline-none"
+                className="w-[85%] text-[.8rem] outline-none sm:text-[1rem]"
                 type="text"
               />
               {nameError !== "" && (
@@ -445,7 +445,7 @@ export default function LogInModal() {
               className={`${accountError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full items-center rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
               <div className="flex w-[10%] items-center justify-center">
-                <FaRegUser />
+                <FaRegUser size={16} />
               </div>
               <input
                 onChange={(e) => {
@@ -454,7 +454,7 @@ export default function LogInModal() {
                 }}
                 value={account}
                 placeholder="請輸入帳號(電子郵件)"
-                className="flex flex-grow outline-none"
+                className="flex w-[80%] text-[.8rem] outline-none sm:text-[1rem]"
                 type="text"
               />
               <button
@@ -463,9 +463,9 @@ export default function LogInModal() {
                   if (secondsLeft > 0) return;
                   handleSendValidateEmail();
                 }}
-                className={`${isSendActivationEmailLoading ? "pointer-events-none bg-gray-100 text-gray-400" : secondsLeft > 0 ? "pointer-events-none bg-gray-100" : ""} ml-auto inline-block h-max w-max rounded-lg bg-gray-200 px-1 py-1 text-[.6rem] font-bold hover:cursor-pointer sm:px-2 sm:text-[.8rem]`}
+                className={`${isSendActivationEmailLoading ? "pointer-events-none bg-gray-100 text-gray-400" : secondsLeft > 0 ? "pointer-events-none bg-gray-100" : ""} ml-auto inline-block h-max w-max rounded-lg bg-gray-200 px-1 py-1 text-[.6rem] font-bold hover:cursor-pointer sm:text-[.8rem]`}
               >
-                {secondsLeft > 0 ? `${secondsLeft}秒` : "驗證信箱"}
+                {secondsLeft > 0 ? `${secondsLeft}秒` : "驗證"}
               </button>
               {accountError !== "" && (
                 <span className="absolute top-[100%] left-0 text-[.8rem] text-red-500 sm:top-[110%]">
@@ -487,7 +487,7 @@ export default function LogInModal() {
                 }}
                 value={password}
                 placeholder="請輸入密碼"
-                className="w-[85%] outline-none"
+                className="w-[85%] text-[.8rem] outline-none sm:text-[1rem]"
                 type="text"
               />
               {passwordError !== "" && (
@@ -511,7 +511,7 @@ export default function LogInModal() {
                 }}
                 value={rePassword}
                 placeholder="請再次輸入密碼"
-                className="w-[85%] outline-none"
+                className="w-[85%] text-[.8rem] outline-none sm:text-[1rem]"
                 type="text"
               />
               {rePasswordError !== "" && (
