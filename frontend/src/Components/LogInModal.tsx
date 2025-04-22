@@ -315,7 +315,7 @@ export default function LogInModal() {
   return (
     <>
       <div className="loginModalPosition flex h-full w-full flex-col items-center bg-gray-100">
-        <div className="loginModalHeight relative flex w-[90%] max-w-[400px] flex-col items-center rounded-lg bg-white p-4 sm:rounded-2xl">
+        <div className="loginModalHeight relative flex w-[90%] max-w-[480px] flex-col items-center rounded-lg bg-white p-4 sm:rounded-2xl">
           {/* 登入 */}
           <form
             onSubmit={(e) => handleAccountPasswordLogin(e)}

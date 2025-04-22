@@ -10,7 +10,9 @@ import ErrorBoundaryFallback from "./Components/ErrorBoundaryFallback.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId="589645995611-uah347icurueb177ceanhiub2q4jm27d.apps.googleusercontent.com">
+    <GoogleOAuthProvider
+      clientId={`${import.meta.env.VITE_GOOGLE_AUTH_CLIENTID}`}
+    >
       <NoticeDisplayContextProvider>
         <AppProviders>
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>

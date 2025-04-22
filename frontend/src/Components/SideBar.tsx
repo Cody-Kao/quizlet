@@ -98,7 +98,7 @@ export default function SideBar({
               isActive ? "light-nav-color light-nav-bg-color font-bold" : ""
             } ${isSideBarOpen ? "" : "hover-tag w-[48px]"}`
           }
-          data-label={label} /* Pass the label dynamically */
+          data-label={label} /* Pass the label dynamically to hover-tag */
         >
           {/* Icon Container */}
           <div className="relative flex w-8 flex-shrink-0 items-center justify-center text-[1.4rem]">
