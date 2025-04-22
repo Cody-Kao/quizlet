@@ -143,7 +143,7 @@ body {
 
 /* login modal form height */
 .loginModalHeight {
-  height: 85%;
+  height: 95%;
 }
 @media (min-height: 680px) {
   .loginModalHeight {
@@ -159,6 +159,10 @@ body {
   .loginModalHeight {
     height: 50%;
   }
+}
+
+.loginModalPosition {
+  justify-content: center;
 }
 
 /* scroll bar */

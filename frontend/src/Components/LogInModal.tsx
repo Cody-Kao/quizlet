@@ -314,14 +314,16 @@ export default function LogInModal() {
 
   return (
     <>
-      <div className="flex h-full w-full flex-col items-center justify-center bg-gray-100">
-        <div className="loginModalHeight relative flex w-[85%] max-w-[400px] flex-col items-center rounded-lg bg-white p-4 sm:rounded-2xl">
+      <div className="loginModalPosition flex h-full w-full flex-col items-center bg-gray-100">
+        <div className="loginModalHeight relative flex w-[90%] max-w-[400px] flex-col items-center rounded-lg bg-white p-4 sm:rounded-2xl">
           {/* 登入 */}
           <form
             onSubmit={(e) => handleAccountPasswordLogin(e)}
             className={`absolute top-0 left-0 flex h-full w-full flex-col items-center gap-5 overflow-y-auto rounded-lg bg-white p-4 transition-all ease-in-out sm:gap-7 sm:rounded-2xl ${isSliding ? "invisible" : "visible translate-x-0"}`}
           >
-            <h1 className="mb-2 text-[2rem] font-bold text-black">Login</h1>
+            <h1 className="text-[1.5rem] font-bold text-black sm:mb-2 sm:text-[2rem]">
+              Login
+            </h1>
             {/* input區域--帳號 */}
             <div
               className={`${accountError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
@@ -401,7 +403,7 @@ export default function LogInModal() {
               onClick={() => {
                 handleSliding();
               }}
-              className="right-[5px] bottom-0 mt-auto ml-auto flex items-center gap-1 text-[.8rem] hover:cursor-pointer sm:absolute sm:text-[1rem]"
+              className="absolute right-[5px] bottom-0 flex items-center gap-1 text-[.8rem] hover:cursor-pointer sm:text-[1rem]"
             >
               點我去註冊
               <FaArrowRight />
@@ -410,9 +412,11 @@ export default function LogInModal() {
           {/* 註冊 */}
           <form
             onSubmit={(e) => handleAccountPasswordRegister(e)}
-            className={`absolute top-0 left-0 flex h-full w-full flex-col items-center gap-5 rounded-lg bg-white p-4 transition-all duration-300 ease-in-out sm:gap-7 sm:rounded-2xl ${isSliding ? "visible translate-x-0" : "invisible translate-x-[20%]"}`}
+            className={`absolute top-0 left-0 flex h-full w-full flex-col items-center gap-5 overflow-auto rounded-lg bg-white p-4 transition-all duration-300 ease-in-out sm:gap-7 sm:rounded-2xl ${isSliding ? "visible translate-x-0" : "invisible translate-x-[20%]"}`}
           >
-            <h1 className="text-[2rem] font-bold text-black">Register</h1>
+            <h1 className="text-[1.5rem] font-bold text-black sm:mb-2 sm:text-[2rem]">
+              Register
+            </h1>
             {/* 使用者名稱 */}
             <div
               className={`${nameError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
@@ -438,7 +442,7 @@ export default function LogInModal() {
             </div>
             {/* input區域--帳號 */}
             <div
-              className={`${accountError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full rounded-lg border-1 px-1 py-2 shadow-lg`}
+              className={`${accountError === "" ? "border-gray-200 bg-white" : "border-2 border-red-400"} relative flex w-full items-center rounded-lg border-1 px-1 py-2 shadow-lg`}
             >
               <div className="flex w-[10%] items-center justify-center">
                 <FaRegUser />
@@ -459,7 +463,7 @@ export default function LogInModal() {
                   if (secondsLeft > 0) return;
                   handleSendValidateEmail();
                 }}
-                className={`${isSendActivationEmailLoading ? "pointer-events-none bg-gray-100 text-gray-400" : secondsLeft > 0 ? "pointer-events-none bg-gray-100" : ""} ml-auto inline-block h-full w-max rounded-lg bg-gray-200 px-1 text-[.6rem] font-bold hover:cursor-pointer sm:px-2 sm:text-[.8rem]`}
+                className={`${isSendActivationEmailLoading ? "pointer-events-none bg-gray-100 text-gray-400" : secondsLeft > 0 ? "pointer-events-none bg-gray-100" : ""} ml-auto inline-block h-max w-max rounded-lg bg-gray-200 px-1 py-1 text-[.6rem] font-bold hover:cursor-pointer sm:px-2 sm:text-[.8rem]`}
               >
                 {secondsLeft > 0 ? `${secondsLeft}秒` : "驗證信箱"}
               </button>
@@ -542,7 +546,7 @@ export default function LogInModal() {
               onClick={() => {
                 handleSliding();
               }}
-              className="fixed bottom-0 left-[5px] ml-auto flex items-center gap-1 text-[.8rem] hover:cursor-pointer sm:text-[1rem]"
+              className="absolute bottom-0 left-[5px] flex items-center gap-1 text-[.8rem] hover:cursor-pointer sm:text-[1rem]"
             >
               <FaArrowLeft />
               點我去登入
