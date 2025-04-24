@@ -83,6 +83,7 @@ export default function LogInContextProvider({
         setUser(data);
       })
       .catch((error) => {
+        setUser(null);
         if (!firstMount) return;
         setNotice(error as NoticeDisplay);
       })

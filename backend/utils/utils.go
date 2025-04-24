@@ -219,7 +219,7 @@ func RemoveJWTCookie(w http.ResponseWriter) {
 		Path:     "/",                  // Must match original cookie path
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteNoneMode,
 		Expires:  time.Unix(0, 0),      // Expired timestamp
 		MaxAge:   -1,                   // Forces deletion
 	})
@@ -320,7 +320,6 @@ func SendEmail(htmlPath string, mailTitle string, toMail string, data string) er
 	m.SetHeader("Subject", mailTitle)
 	m.SetBody("text/html", htmlBody.String())
 	//m.Attach("") // 可以用來傳送logo
-
 	d := gomail.NewDialer("smtp.gmail.com", 587, os.Getenv("MAIL_USERNAME"), os.Getenv("MAIL_PASSWORD"))
 
 	// Send the email to Bob, Cora and Dan.
