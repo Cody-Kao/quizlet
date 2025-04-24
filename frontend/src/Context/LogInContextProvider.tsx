@@ -88,7 +88,7 @@ export default function LogInContextProvider({
       .finally(() => {
         setIsChecking(false);
       });
-  }, [user, currentPath]);
+  }, [currentPath]);
   return (
     <>
       <logInContext.Provider
