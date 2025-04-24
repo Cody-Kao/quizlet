@@ -334,7 +334,7 @@ func handleAccountPasswordRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	// 確認是否在開通的有效期限
 	if record.Expire < utils.GetNow() {
-		writeErrorJson(w, Type.MessageDisplayError{Message: "電子郵件超過有效註冊時間"})
+		writeErrorJson(w, Type.MessageDisplayError{Message: "電子郵件超過有效註冊時間 請重新驗證"})
 		return 
 	}
 
