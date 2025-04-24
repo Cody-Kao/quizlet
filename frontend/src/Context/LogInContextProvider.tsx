@@ -60,10 +60,8 @@ export default function LogInContextProvider({
 
   // 確認是否登入
   useEffect(() => {
-    if (isLogIn || currentPath.startsWith("/activateEmail")) {
-      if (currentPath.startsWith("/activateEmail")) {
-        setIsChecking(false);
-      }
+    if (currentPath.startsWith("/activateEmail")) {
+      setIsChecking(false);
       return;
     }
     setFirstMount(false);
@@ -83,8 +81,7 @@ export default function LogInContextProvider({
         setUser(data);
       })
       .catch((error) => {
-        setUser(null);
-        setIsLogin(false);
+        setLogOut();
         if (!firstMount) return;
         setNotice(error as NoticeDisplay);
       })
