@@ -908,10 +908,11 @@ func EnableCORS(next http.Handler) http.Handler {
 		if allowedOrigin == "" {
 			allowedOrigin = "http://localhost:5173"
 		}
+		allowedOrigins := strings.Split(allowedOrigin, " ") // 用空格區分不同origin
 		origin := r.Header.Get("Origin")
 		fmt.Println(origin)
-		if origin == allowedOrigin {
-			w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
+		if slices.Contains(allowedOrigins, origin) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")

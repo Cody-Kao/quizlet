@@ -207,7 +207,7 @@ func SetJTWCookie(w http.ResponseWriter, tokenString string, expireTime time.Tim
 		Path:     "/",
 		HttpOnly: true,  // Prevents JavaScript access (protects against XSS)
 		Secure:   true,  // Ensures cookie is only sent over HTTPS
-		SameSite: http.SameSiteLaxMode, // 如果是strict mode就能Prevents CSRF attacks，但用CORS去檔也可以
+		SameSite: http.SameSiteStrictMode, // 如果是strict mode就能Prevents CSRF attacks，但用CORS去檔也可以
 		Expires:  expireTime,
 	})
 }
@@ -219,7 +219,7 @@ func RemoveJWTCookie(w http.ResponseWriter) {
 		Path:     "/",                  // Must match original cookie path
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		Expires:  time.Unix(0, 0),      // Expired timestamp
 		MaxAge:   -1,                   // Forces deletion
 	})
