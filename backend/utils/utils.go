@@ -203,6 +203,7 @@ func GetJWTCookie(r *http.Request) (string, error) {
 func SetJTWCookie(w http.ResponseWriter, tokenString string, expireTime time.Time) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "JWT",
+		Domain:   "volupfree.site",
 		Value:    tokenString,
 		Path:     "/",
 		HttpOnly: true,  // Prevents JavaScript access (protects against XSS)
@@ -215,6 +216,7 @@ func SetJTWCookie(w http.ResponseWriter, tokenString string, expireTime time.Tim
 func RemoveJWTCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "JWT",
+		Domain:   "volupfree.site",
 		Value:    "",                   // Empty value
 		Path:     "/",                  // Must match original cookie path
 		HttpOnly: true,
