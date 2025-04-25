@@ -74,27 +74,30 @@ body {
   position: relative;
 }
 
-.hover-tag::after {
-  content: attr(data-label); /* Get content from data-label attribute */
-  background-color: #000;
-  color: #fff;
-  padding: 5px;
-  border-radius: 4px;
-  position: absolute;
-  left: 120%; /* Align to the right of the icon */
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap; /* Prevents wrapping */
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.2s ease-in-out,
-    visibility 0.2s ease-in-out;
-}
+/* fixing the flickering of label when collapsing sidebar in ios devices */
+@media (hover: hover) and (pointer: fine) {
+  .hover-tag::after {
+    content: attr(data-label);
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    left: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.2s ease-in-out,
+      visibility 0.2s ease-in-out;
+  }
 
-.hover-tag:hover::after {
-  opacity: 1;
-  visibility: visible;
+  .hover-tag:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 .two-by-two-grid {
