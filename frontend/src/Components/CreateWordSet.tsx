@@ -445,7 +445,7 @@ export default function CreateWordSet() {
         </div>
         {/* 第三列設定區 */}
         <div className="flex w-full items-center justify-between py-4">
-          <div className="flex gap-2 rounded-lg border-2 border-gray-300 bg-white p-2 hover:cursor-pointer hover:bg-gray-300">
+          <div className="hidden gap-2 rounded-lg border-2 border-gray-300 bg-white p-2 opacity-50 grayscale hover:cursor-not-allowed hover:bg-gray-300 md:flex">
             <CiImport className="h-6 w-6" />
             <span>匯入</span>
           </div>
@@ -461,7 +461,7 @@ export default function CreateWordSet() {
             </div>
             <div
               onClick={() => handleSwapWordAndDefinition()}
-              className="group relative hidden sm:block"
+              className="group relative hidden md:block"
             >
               <HiSwitchHorizontal className="h-10 w-10 rounded-[50%] border-2 border-gray-300 bg-white p-1 hover:cursor-pointer hover:bg-gray-300" />
               <span className="absolute top-[110%] left-[50%] z-2 hidden w-max -translate-x-[50%] rounded-lg bg-black p-2 text-white group-hover:block">
@@ -470,7 +470,7 @@ export default function CreateWordSet() {
             </div>
             <button
               onClick={() => handleSwapWordAndDefinition()}
-              className="block rounded-lg border-2 border-gray-300 bg-white p-2 text-[.8rem] sm:hidden"
+              className="block rounded-lg border-2 border-gray-300 bg-white p-2 text-[.8rem] md:hidden"
             >
               交換單字跟註釋
             </button>

@@ -180,27 +180,28 @@ export default function NavBar({
                 </span>
               </div>
             </div>
-            <div className="flex w-full flex-2/5 flex-col justify-center border-b-2 border-gray-300 font-bold">
+            <div className="flex w-full flex-2/5 flex-col border-b-2 border-gray-300 font-bold">
               <div
                 onClick={() => {
                   navigate("/setting", { replace: false });
                   setIsCardOpen(false);
                 }}
-                className="w-full px-5 py-2 hover:cursor-pointer hover:bg-gray-300"
+                className="w-full flex-grow px-5 py-2 hover:cursor-pointer hover:bg-gray-300"
               >
-                <div className="flex w-full flex-grow items-center gap-4 text-xl">
+                <div className="flex h-full w-full items-center gap-4 text-xl">
                   <span className="flex w-6 items-center justify-center">
                     <MdOutlineSettings className="text-2xl" />
                   </span>
                   <span>設定</span>
                 </div>
               </div>
-              <div className="w-full px-5 py-2 hover:cursor-pointer hover:bg-gray-300">
-                <div className="flex w-full flex-grow items-center gap-4 text-xl">
+              {/* 深色模式待開發 */}
+              <div className="flex w-full flex-grow px-5 py-2 opacity-50 grayscale hover:cursor-not-allowed hover:bg-gray-300">
+                <div className="flex h-full w-full items-center gap-4 text-xl">
                   <span className="flex w-6 items-center justify-center">
                     <HiOutlineMoon className="text-2xl" />
                   </span>
-                  <span>深色模式</span>
+                  <span>深色模式(待開發)</span>
                 </div>
               </div>
             </div>
