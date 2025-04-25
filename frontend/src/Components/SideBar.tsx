@@ -115,9 +115,7 @@ export default function SideBar({
           {/* Text (Hidden When Collapsed) */}
           <span
             className={`text-md ml-2 transition-transform duration-300 ${
-              isSideBarOpen
-                ? "visible scale-100 opacity-100"
-                : "invisible scale-0 opacity-0"
+              isSideBarOpen ? "visible scale-100" : "invisible scale-0"
             }`}
           >
             {label}
