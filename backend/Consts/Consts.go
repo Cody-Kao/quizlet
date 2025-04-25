@@ -12,6 +12,7 @@ var MongoDB_uri = os.Getenv("mongoDB_uri")
 var FrontendPATH = os.Getenv("FrontendPATH") // frontend url
 var ADMINID = os.Getenv("go_quizlet_admin_id")
 var ADMINNAME = os.Getenv("go_quizlet_admin_name")
+var DOMAIN = os.Getenv("go-quizlet-domain")
 
 var DefaultJWTExpireTime = time.Now().Add(time.Hour * 24 * 7)
 
