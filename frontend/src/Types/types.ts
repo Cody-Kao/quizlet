@@ -142,3 +142,13 @@ export interface HomePageWordSet {
   authorID: string;
   wordCnt: number;
 }
+
+export interface ImportWord {
+  vocabulary: string;
+  definition: string;
+}
+
+export interface Sound {
+  EngName: string;
+  TwName: string;
+}

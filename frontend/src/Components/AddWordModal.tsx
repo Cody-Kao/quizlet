@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { isValidSound } from "../Utils/utils";
+import React from "react";
 
-export default function AddWordModal({
+export default React.memo(function AddWordModal({
   isModalOpen,
   setIsModalOpen,
   handleWordToAdd,
@@ -229,4 +230,4 @@ export default function AddWordModal({
       </div>
     </>
   );
-}
+});

@@ -3,20 +3,21 @@ import { GoGear } from "react-icons/go";
 import { HiSwitchHorizontal } from "react-icons/hi";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import { v4 as uuid } from "uuid";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import AddWordModal from "./AddWordModal";
 import { isValidSound, textCount } from "../Utils/utils";
 import { useLocalStorage } from "../Hooks/useLocalStorage";
 import ConfirmModal from "./ConfirmModal";
 import { useNavigate } from "react-router";
-import { NoticeDisplay, Word, WordSetType } from "../Types/types";
+import { ImportWord, NoticeDisplay, Word, WordSetType } from "../Types/types";
 import { postRequest } from "../Utils/postRequest";
-import { PATH } from "../Consts/consts";
+import { PATH, soundArray } from "../Consts/consts";
 import { CreateWordSetRequest } from "../Types/request";
 import { useLogInContextProvider } from "../Context/LogInContextProvider";
 import { useNoticeDisplayContextProvider } from "../Context/NoticeDisplayContextProvider";
 import SettingWordSetModal from "./SettingWordSetModal";
+import ImportModal from "./ImportModal";
 
 export default function CreateWordSet() {
   const oneTimeID = uuid();
@@ -28,11 +29,28 @@ export default function CreateWordSet() {
     "allowCopy",
     true,
   );
+  const toggleAllowCopy = useCallback(() => {
+    setAllowCopy((prev) => !prev);
+  }, []);
   const [isPublic, setIsPublic, removeIsPublic] = useLocalStorage(
     "isPublic",
     true,
   );
+  const toggleIsPublic = useCallback(() => {
+    setIsPublic((prev) => !prev);
+  }, []);
   const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
+  const closeSettingModal = useCallback(() => {
+    setIsSettingModalOpen(false);
+  }, []);
+
+  // 開關匯入單字的modal
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+  const closeImportModal = useCallback(() => {
+    setIsImportModalOpen(false);
+  }, []);
+
   // 處理標題
   const [title, setTitle, removeTitle] = useLocalStorage("title", "");
   // 單字集敘述
@@ -103,47 +121,158 @@ export default function CreateWordSet() {
     );
   };
 
-  // 新增單字
-  const handleAddWord = (
-    vocabulary: string,
-    definition: string,
-    order: number,
-    vocabularySound: string,
-    definitionSound: string,
-  ) => {
-    console.log(
-      "handleAddWord in createWordSet",
-      "v:",
-      vocabularySound,
-      "d:",
-      definitionSound,
-    );
-    const newWordID = uuid();
-    setWords((words) => {
-      const updatedWords = words.map((word) =>
-        word.order >= order ? { ...word, order: word.order + 1 } : word,
-      );
-      return [
-        ...updatedWords,
-        {
-          id: newWordID, // 用uuid只是為了前端好操作，可以編輯或刪除等等，並不是要給後端用的
-          order: order,
-          vocabulary: vocabulary,
-          definition: definition,
-          vocabularySound: vocabularySound,
-          definitionSound: definitionSound,
-          star: false,
-        },
-      ];
-    });
-    setVocabularyError((prev) => ({ ...prev, [newWordID]: "" }));
-    setDefinitionError((prev) => ({ ...prev, [newWordID]: "" }));
-    setVocabularySoundError((prev) => ({ ...prev, [newWordID]: "" }));
-    setDefinitionSoundError((prev) => ({ ...prev, [newWordID]: "" }));
-  };
+  // 用order代表是否開啟，-1則關閉(處理addWord modal)
+  const [isModalOpen, setIsModalOpen] = useState<number>(-1);
+
+  // 新增一個單字
+  const handleAddWord = useCallback(
+    (
+      vocabulary: string,
+      definition: string,
+      order: number,
+      vocabularySound: string,
+      definitionSound: string,
+    ) => {
+      const newWordID = uuid();
+      setWords((words) => {
+        const updatedWords = words.map((word) =>
+          word.order >= order ? { ...word, order: word.order + 1 } : word,
+        );
+        return [
+          ...updatedWords,
+          {
+            id: newWordID, // 用uuid只是為了前端好操作，可以編輯或刪除等等，並不是要給後端用的
+            order: order,
+            vocabulary: vocabulary,
+            definition: definition,
+            vocabularySound: vocabularySound,
+            definitionSound: definitionSound,
+            star: false,
+          },
+        ];
+      });
+      setVocabularyError((prev) => ({ ...prev, [newWordID]: "" }));
+      setDefinitionError((prev) => ({ ...prev, [newWordID]: "" }));
+      setVocabularySoundError((prev) => ({ ...prev, [newWordID]: "" }));
+      setDefinitionSoundError((prev) => ({ ...prev, [newWordID]: "" }));
+    },
+    [],
+  );
+
+  // 新增多個單字(匯入)
+  const importWords = useCallback(
+    (
+      importWords: ImportWord[],
+      vocabularySound: string,
+      definitionSound: string,
+      insertIndex: number,
+    ): boolean => {
+      if (importWords.length === 0) {
+        setNotice({
+          type: "Error",
+          payload: { message: "不得匯入空單字集" },
+        } as NoticeDisplay);
+        return false;
+      }
+      if (!isValidSound(vocabularySound)) {
+        setNotice({
+          type: "Error",
+          payload: { message: "單字聲音格式錯誤" },
+        } as NoticeDisplay);
+        return false;
+      }
+      if (!isValidSound(definitionSound)) {
+        setNotice({
+          type: "Error",
+          payload: { message: "註釋聲音格式錯誤" },
+        } as NoticeDisplay);
+        return false;
+      }
+      if (insertIndex < -1 || insertIndex > words.length) {
+        setNotice({
+          type: "Error",
+          payload: { message: "插入單字位置錯誤" },
+        } as NoticeDisplay);
+        return false;
+      }
+      for (const word of importWords) {
+        if (word.vocabulary.length === 0) {
+          setNotice({
+            type: "Error",
+            payload: { message: "單字不得為空" },
+          } as NoticeDisplay);
+          return false;
+        }
+        if (word.vocabulary.length > 100) {
+          setNotice({
+            type: "Error",
+            payload: { message: "單字不得超過100" },
+          } as NoticeDisplay);
+          return false;
+        }
+        if (word.definition.length === 0) {
+          setNotice({
+            type: "Error",
+            payload: { message: "註釋不得為空" },
+          } as NoticeDisplay);
+          return false;
+        }
+        if (word.definition.length > 100) {
+          setNotice({
+            type: "Error",
+            payload: { message: "註釋不得超過300" },
+          } as NoticeDisplay);
+          return false;
+        }
+      }
+
+      let index = insertIndex;
+      if (index === -1) {
+        // 抓最後一個index
+        index = words.length;
+      }
+      const newIDs: string[] = [];
+      setWords((words) => {
+        const firstHalf = words.slice(0, index);
+        const secondHalf = words.slice(index, words.length);
+        let startOrder = firstHalf[firstHalf.length - 1]?.order || 1;
+        const newWords = [];
+        for (const w of importWords) {
+          const newID = uuid();
+          const newWord: Word = {
+            id: newID,
+            order: startOrder,
+            vocabulary: w.vocabulary,
+            definition: w.definition,
+            vocabularySound: vocabularySound,
+            definitionSound: definitionSound,
+            star: false,
+          };
+          newWords.push(newWord);
+          newIDs.push(newID);
+          startOrder++;
+        }
+        // 更新所有後半部分的word的order(接續新增的字的)
+        const updatedSecondHalf = secondHalf.map((word, i) => ({
+          ...word,
+          order: startOrder + i,
+        }));
+        return firstHalf.concat(newWords, updatedSecondHalf);
+      });
+      // 用新的IDs新增相對應的error state
+      const errorEntries = Object.fromEntries(newIDs.map((id) => [id, ""]));
+      setVocabularyError((prev) => ({ ...prev, ...errorEntries }));
+      setDefinitionError((prev) => ({ ...prev, ...errorEntries }));
+      setVocabularySoundError((prev) => ({ ...prev, ...errorEntries }));
+      setDefinitionSoundError((prev) => ({ ...prev, ...errorEntries }));
+
+      return true;
+    },
+    [],
+  );
 
   // 刪除單字
-  const handleDelete = (wordID: string) => {
+  const handleDelete = useCallback((wordID: string) => {
     setWords((words) => words.filter((word) => word.id !== wordID));
     setVocabularyError((prev) => {
       const newState = { ...prev }; // shallow copy
@@ -160,12 +289,12 @@ export default function CreateWordSet() {
       delete newState[wordID];
       return newState;
     });
-    setVocabularySoundError((prev) => {
+    setDefinitionSoundError((prev) => {
       const newState = { ...prev }; // shallow copy
       delete newState[wordID];
       return newState;
     });
-  };
+  }, []);
 
   // 編輯單字發音
   const handleEditWordSound = (wordID: string, newVocabularySound: string) => {
@@ -201,8 +330,6 @@ export default function CreateWordSet() {
       })),
     );
   };
-  // 用order代表是否開啟，-1則關閉
-  const [isModalOpen, setIsModalOpen] = useState<number>(-1);
 
   // 處理清除全部/刪除的Modal
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
@@ -211,14 +338,17 @@ export default function CreateWordSet() {
   const handleSentConfirm = () => {
     if (title.trim().length === 0) {
       setTitleError("標題不得為空");
+      alert("請檢查錯誤");
       return;
     }
     if (title.length > 50) {
       setTitleError("標題不得超過50字元");
+      alert("請檢查錯誤");
       return;
     }
     if (description.length > 150) {
       setDescriptionError("單字集敘述不得超過150字元");
+      alert("請檢查錯誤");
       return;
     }
     // 檢查單字/註釋/聲音 並且把單字/註釋給trim space 再賦值回去(這樣不會造成re-render但卻修改了word array)
@@ -229,6 +359,7 @@ export default function CreateWordSet() {
           ...prev,
           [words[i].id]: "單字不得為空",
         }));
+        alert("請檢查錯誤");
         return;
       }
       if (vocabulary.length > 100) {
@@ -236,6 +367,7 @@ export default function CreateWordSet() {
           ...prev,
           [words[i].id]: "單字不得超過100字元",
         }));
+        alert("請檢查錯誤");
         return;
       }
       const definition = words[i].definition;
@@ -244,6 +376,7 @@ export default function CreateWordSet() {
           ...prev,
           [words[i].id]: "註釋不得為空",
         }));
+        alert("請檢查錯誤");
         return;
       }
       if (definition.length > 300) {
@@ -251,20 +384,16 @@ export default function CreateWordSet() {
           ...prev,
           [words[i].id]: "註釋不得超過300字元",
         }));
+        alert("請檢查錯誤");
         return;
       }
-      console.log(
-        "聲音格式: ",
-        "v:",
-        words[i].vocabularySound,
-        "d:",
-        words[i].definitionSound,
-      );
+
       if (!isValidSound(words[i].vocabularySound)) {
         setVocabularySoundError((prev) => ({
           ...prev,
           [words[i].id]: "聲音格式錯誤",
         }));
+        alert("請檢查錯誤");
         return;
       }
       if (!isValidSound(words[i].definitionSound)) {
@@ -272,6 +401,7 @@ export default function CreateWordSet() {
           ...prev,
           [words[i].id]: "聲音格式錯誤",
         }));
+        alert("請檢查錯誤");
         return;
       }
       words[i].vocabulary = vocabulary;
@@ -356,10 +486,10 @@ export default function CreateWordSet() {
   return (
     <>
       <SettingWordSetModal
-        handleToggleAllowCopy={() => setAllowCopy((prev) => !prev)}
-        handleToggleIsPublic={() => setIsPublic((prev) => !prev)}
+        handleToggleAllowCopy={toggleAllowCopy}
+        handleToggleIsPublic={toggleIsPublic}
         isModalOpen={isSettingModalOpen}
-        handleClose={() => setIsSettingModalOpen(false)}
+        handleClose={closeSettingModal}
         allowCopy={allowCopy}
         isPublic={isPublic}
       />
@@ -376,6 +506,14 @@ export default function CreateWordSet() {
         setIsModalOpen={setIsModalOpen}
         handleAddWord={handleAddWord}
       />
+
+      <ImportModal
+        totalWords={words.length}
+        isModalOpen={isImportModalOpen}
+        handleClose={closeImportModal}
+        handleImport={importWords}
+      />
+
       <div className="flex h-full w-full flex-col gap-4 bg-gray-100 px-[5%] py-[2rem] lg:pr-[10%] lg:pl-[5%]">
         {/* 第一列儲存按扭區 */}
         <div className="flex w-full items-center justify-between">
@@ -445,7 +583,10 @@ export default function CreateWordSet() {
         </div>
         {/* 第三列設定區 */}
         <div className="flex w-full items-center justify-between py-4">
-          <div className="hidden gap-2 rounded-lg border-2 border-gray-300 bg-white p-2 opacity-50 grayscale hover:cursor-not-allowed hover:bg-gray-300 md:flex">
+          <div
+            onClick={() => setIsImportModalOpen(true)}
+            className="flex gap-2 rounded-lg border-2 border-gray-300 bg-white p-2 hover:cursor-pointer hover:bg-gray-300"
+          >
             <CiImport className="h-6 w-6" />
             <span>匯入</span>
           </div>
@@ -538,11 +679,14 @@ export default function CreateWordSet() {
                         handleEditWordSound(word.id, e.target.value);
                       }}
                     >
-                      <option value={"en-US"}>英語(美式)</option>
-                      <option value={"en-GB"}>英語(英式)</option>
-                      <option value={"en-AU"}>英語(澳洲)</option>
-                      <option value={"zh-TW"}>中文(繁體)</option>
-                      <option value={"zh-CN"}>中文(簡體)</option>
+                      {soundArray.map((sound, index) => (
+                        <option
+                          key={`vocabularySound-${index}`}
+                          value={sound.EngName}
+                        >
+                          {sound.TwName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -584,11 +728,14 @@ export default function CreateWordSet() {
                         }
                       }}
                     >
-                      <option value={"en-US"}>英語(美式)</option>
-                      <option value={"en-GB"}>英語(英式)</option>
-                      <option value={"en-AU"}>英語(澳洲)</option>
-                      <option value={"zh-TW"}>中文(繁體)</option>
-                      <option value={"zh-CN"}>中文(簡體)</option>
+                      {soundArray.map((sound, index) => (
+                        <option
+                          key={`definitionSound-${index}`}
+                          value={sound.EngName}
+                        >
+                          {sound.TwName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

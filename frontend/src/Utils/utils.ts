@@ -117,7 +117,7 @@ export const isValidName = (name: string): boolean => {
 };
 
 export const isValidSound = (sound: string): boolean => {
-  return soundArray.includes(sound);
+  return soundArray.find((s) => s.EngName === sound) !== undefined;
 };
 
 export const shuffleArray = <T>(array: T[]): T[] => {

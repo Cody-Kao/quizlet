@@ -1,4 +1,6 @@
-export default function ConfirmModal({
+import React from "react";
+
+export default React.memo(function ConfirmModal({
   description,
   isModalOpen,
   setIsModalOpen,
@@ -13,21 +15,21 @@ export default function ConfirmModal({
     <>
       <div
         onClick={() => setIsModalOpen(false)}
-        className={`${isModalOpen ? "visible" : "invisible"} fixed inset-0 z-1000 h-screen w-screen bg-black opacity-[.3]`}
+        className={`${isModalOpen ? "visible" : "invisible"} fixed inset-0 z-1001 h-screen w-screen bg-black opacity-[.3]`}
       ></div>
       <div
-        className={`${isModalOpen ? "visible top-[50%] opacity-100" : "invisible top-[40%] opacity-0"} fixed left-[50%] z-1000 flex h-[180px] w-[90%] max-w-[360px] translate-[-50%] flex-col justify-between gap-[2rem] rounded-xl bg-white px-3 py-5 transition-all duration-300 sm:max-w-[400px]`}
+        className={`${isModalOpen ? "visible top-[50%] opacity-100" : "invisible top-[40%] opacity-0"} fixed left-[50%] z-1001 flex h-[180px] w-[90%] max-w-[360px] translate-[-50%] flex-col justify-between gap-[2rem] rounded-xl bg-white px-3 py-5 transition-all duration-300 sm:max-w-[400px]`}
       >
         {/* cross button */}
         <button
           onClick={() => {
             setIsModalOpen(false);
           }}
-          className="absolute top-[.5rem] right-5 h-[2rem] w-[2rem] text-lg hover:cursor-pointer sm:top-[1rem] sm:text-2xl"
+          className="absolute top-[.5rem] right-5 h-[2rem] w-[2rem] text-lg hover:cursor-pointer sm:text-2xl"
         >
           &#x2716;
         </button>
-        <h1 className="mt-[1rem] font-bold text-black sm:text-[1.2rem]">
+        <h1 className="mt-[1.2rem] font-bold text-black sm:text-[1.2rem]">
           {description}
         </h1>
         <div className="flex w-full justify-end gap-3 px-3">
@@ -52,4 +54,4 @@ export default function ConfirmModal({
       </div>
     </>
   );
-}
+});

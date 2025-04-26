@@ -14,7 +14,7 @@ import { useNavigate } from "react-router";
 import { WordSetType } from "../Types/types";
 import { EditWordSetRequest } from "../Types/request";
 import { postRequest } from "../Utils/postRequest";
-import { PATH } from "../Consts/consts";
+import { PATH, soundArray } from "../Consts/consts";
 import ContentEditable from "./ContentEditable";
 import { useNoticeDisplayContextProvider } from "../Context/NoticeDisplayContextProvider";
 import SettingWordSetModal from "./SettingWordSetModal";
@@ -519,11 +519,14 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
                         handleEditVocabularySound(word.id, e.target.value);
                       }}
                     >
-                      <option value={"en-US"}>英語(美式)</option>
-                      <option value={"en-GB"}>英語(英式)</option>
-                      <option value={"en-AU"}>英語(澳洲)</option>
-                      <option value={"zh-TW"}>中文(繁體)</option>
-                      <option value={"zh-CN"}>中文(簡體)</option>
+                      {soundArray.map((sound, index) => (
+                        <option
+                          key={`vocabularySound-${index}`}
+                          value={sound.EngName}
+                        >
+                          {sound.TwName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -553,11 +556,14 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
                         handleEditDefinitionSound(word.id, e.target.value);
                       }}
                     >
-                      <option value={"en-US"}>英語(美式)</option>
-                      <option value={"en-GB"}>英語(英式)</option>
-                      <option value={"en-AU"}>英語(澳洲)</option>
-                      <option value={"zh-TW"}>中文(繁體)</option>
-                      <option value={"zh-CN"}>中文(簡體)</option>
+                      {soundArray.map((sound, index) => (
+                        <option
+                          key={`definitionSound-${index}`}
+                          value={sound.EngName}
+                        >
+                          {sound.TwName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

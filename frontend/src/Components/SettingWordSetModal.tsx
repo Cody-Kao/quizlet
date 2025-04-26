@@ -6,8 +6,9 @@ import {
   ToggleIsPublicRequest,
 } from "../Types/request";
 import { useNoticeDisplayContextProvider } from "../Context/NoticeDisplayContextProvider";
+import React from "react";
 
-export default function SettingWordSetModal({
+export default React.memo(function SettingWordSetModal({
   handleToggleAllowCopy,
   handleToggleIsPublic,
   userID,
@@ -140,4 +141,4 @@ export default function SettingWordSetModal({
       </div>
     </>
   );
-}
+});
