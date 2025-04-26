@@ -127,10 +127,23 @@ export default React.memo(function ImportModal(props: ImportModalProps) {
           <span className="sm:hidden md:ml-[5%]">
             從第
             <input
+              value={insertIndex}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "") {
+                  setInsertIndex(0);
+                  return;
+                }
+                const index = parseInt(value, 10);
+                if (isNaN(index)) return; // not a number, do nothing
+                if (index < 0) return; // block all negative numbers
+                if (index > totalWords) return; // block too large numbers
+                setInsertIndex(index);
+              }}
               type="text"
               className="w-[3rem] rounded-lg bg-gray-200 px-1 outline-none"
             />
-            個字後插入(0為開頭;-1為最後一個字)
+            個字後插入(0為開頭;&nbsp;{`${totalWords}`}為最後一個字)
           </span>
         </header>
         <textarea
