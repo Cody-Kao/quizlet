@@ -1,14 +1,18 @@
-import React, { useState, useEffect, JSX } from "react";
+import React, { useState, useEffect, JSX, memo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SliderDateType } from "../Types/types";
+import { SliderDataType } from "../Types/types";
 
-export default function CardSlider<T extends SliderDateType>({
-  data,
-  renderData,
-}: {
+// Define the props type as a generic interface
+interface CardSliderProps<T extends SliderDataType> {
   data: T[];
   renderData: (card: T) => JSX.Element;
-}) {
+}
+
+// Create a generic component function
+function CardSliderComponent<T extends SliderDataType>({
+  data,
+  renderData,
+}: CardSliderProps<T>) {
   const [startIndex, setStartIndex] = useState(0);
 
   const cards = data;
@@ -86,3 +90,9 @@ export default function CardSlider<T extends SliderDateType>({
     </div>
   );
 }
+
+// Memoize the component while preserving the generic type
+// 讓React.memo下的generic component能正常運作!
+const CardSlider = memo(CardSliderComponent) as typeof CardSliderComponent;
+
+export default CardSlider;

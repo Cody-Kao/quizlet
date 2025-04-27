@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { WordSetCardType } from "../Types/types";
-import Slider from "./Slider";
+import CardSlider from "./CardSlider";
 import WordSetCardComponent from "./WordSetCardComponent";
 import { getRequest } from "../Utils/getRequest";
 import { PATH } from "../Consts/consts";
@@ -22,7 +22,7 @@ export default function PopularWordSetCardSlider() {
   const popularWordSet: WordSetCardType[] = data.popularWordSet;
 
   return (
-    <Slider
+    <CardSlider<WordSetCardType>
       data={popularWordSet}
       renderData={(card: WordSetCardType) => (
         <WordSetCardComponent

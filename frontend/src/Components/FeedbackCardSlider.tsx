@@ -1,4 +1,4 @@
-import Slider from "./Slider";
+import CardSlider from "./CardSlider";
 import FeedbackCard from "./FeedbackCard";
 import { FeedBackCard } from "../Types/types";
 import { FeedBackCard_ZOD } from "../Types/zod_response";
@@ -43,7 +43,7 @@ export default function FeedbackCardSlider() {
           </button>
         </div>
       </div>
-      <Slider
+      <CardSlider
         data={feedbacks}
         renderData={(feedback: FeedBackCard) => (
           <FeedbackCard

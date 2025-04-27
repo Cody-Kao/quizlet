@@ -9,12 +9,12 @@ export interface User {
 }
 
 // 讓slider便generic
-export interface SliderDateType {
+export interface SliderDataType {
   id: string;
 }
 
 // type for sliding card in homepage for popular and new wordSets
-export interface WordSetCardType {
+export interface WordSetCardType extends SliderDataType {
   id: string;
   title: string;
   wordCnt: number;
