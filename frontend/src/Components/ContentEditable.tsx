@@ -13,6 +13,7 @@ const ContentEditable: React.FC<ContentEditableProps> = ({
 }) => {
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const lastCursorPosition = useRef<number | null>(null);
+  const isComposing = useRef<boolean>(false); // Track composition state
 
   // Save cursor position before update
   const saveCursorPosition = (): void => {
@@ -87,8 +88,20 @@ const ContentEditable: React.FC<ContentEditableProps> = ({
   };
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>): void => {
+    if (!isComposing.current) {
+      saveCursorPosition();
+      updateContent(e.currentTarget.textContent || "");
+    }
+  };
+
+  const handleCompositionStart = (): void => {
+    isComposing.current = true;
+  };
+
+  const handleCompositionEnd = (): void => {
+    isComposing.current = false;
     saveCursorPosition();
-    updateContent(e.currentTarget.textContent || "");
+    updateContent(contentEditableRef.current?.textContent || "");
   };
 
   useEffect(() => {
@@ -102,6 +115,8 @@ const ContentEditable: React.FC<ContentEditableProps> = ({
       ref={contentEditableRef}
       contentEditable
       onInput={handleInput}
+      onCompositionStart={handleCompositionStart}
+      onCompositionEnd={handleCompositionEnd}
       dangerouslySetInnerHTML={{ __html: content }}
       className={className}
     />

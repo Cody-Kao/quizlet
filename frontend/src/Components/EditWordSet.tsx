@@ -3,12 +3,18 @@ import { GoGear } from "react-icons/go";
 import { HiSwitchHorizontal } from "react-icons/hi";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import { v4 as uuid } from "uuid";
-import { useEffect, useState } from "react";
-import { EditWord, EditWordSetType, NoticeDisplay, Word } from "../Types/types";
+import { useCallback, useEffect, useState } from "react";
+import {
+  EditWord,
+  EditWordSetType,
+  ImportWord,
+  NoticeDisplay,
+  Word,
+} from "../Types/types";
 import { IoAddCircleOutline } from "react-icons/io5";
 import AddWordModal from "./AddWordModal";
 import ConfirmModal from "./ConfirmModal";
-import { textCount } from "../Utils/utils";
+import { isValidSound, textCount } from "../Utils/utils";
 import { useLocalStorage } from "../Hooks/useLocalStorage";
 import { useNavigate } from "react-router";
 import { WordSetType } from "../Types/types";
@@ -19,6 +25,7 @@ import ContentEditable from "./ContentEditable";
 import { useNoticeDisplayContextProvider } from "../Context/NoticeDisplayContextProvider";
 import SettingWordSetModal from "./SettingWordSetModal";
 import { useLogInContextProvider } from "../Context/LogInContextProvider";
+import ImportModal from "./ImportModal";
 
 // true代表fork單字集 false代表編輯單字集
 export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
@@ -87,47 +94,157 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
   };
 
   // 處理wordToAdd的函數，要注意order問題(插入在中間時)
-  const handleWordToAdd = (
-    newVocabulary: string,
-    newDefinition: string,
-    order: number,
-    vocabularySound: string,
-    definitionSound: string,
-  ) => {
-    // 插入新單字=>更新其他單字的order
-    setCurrentWords((prev) => {
-      const updatedWords = Object.fromEntries(
-        Object.entries(prev).map(([id, word]) => [
-          id,
-          word.order >= order ? { ...word, order: word.order + 1 } : word,
-        ]),
-      );
-      // 然後加入
-      const newWord: Word = {
-        id: uuid(),
-        vocabulary: newVocabulary,
-        definition: newDefinition,
-        star: false,
-        order: order,
-        vocabularySound: vocabularySound,
-        definitionSound: definitionSound,
-      };
+  const handleWordToAdd = useCallback(
+    (
+      newVocabulary: string,
+      newDefinition: string,
+      order: number,
+      vocabularySound: string,
+      definitionSound: string,
+    ) => {
+      setCurrentWords((prev) => {
+        const newId = uuid();
+        const updatedWords: Record<string, Word> = {};
+        // 插入新單字=>更新其他單字的order
+        for (const [id, word] of Object.entries(prev)) {
+          updatedWords[id] =
+            word.order >= order ? { ...word, order: word.order + 1 } : word;
+        }
+        // 然後加入
+        updatedWords[newId] = {
+          id: newId,
+          vocabulary: newVocabulary,
+          definition: newDefinition,
+          star: false,
+          order,
+          vocabularySound,
+          definitionSound,
+        };
 
-      return { ...updatedWords, [newWord.id]: newWord };
-    });
-  };
+        return updatedWords;
+      });
+    },
+    [],
+  );
+
+  // 處理匯入單字
+  const handleImportWords = useCallback(
+    (
+      importWords: ImportWord[],
+      vocabularySound: string,
+      definitionSound: string,
+      insertIndex: number,
+    ): boolean => {
+      if (importWords.length === 0) {
+        setNotice({
+          type: "Error",
+          payload: { message: "不得匯入空單字集" },
+        } as NoticeDisplay);
+        return false;
+      }
+      if (!isValidSound(vocabularySound)) {
+        setNotice({
+          type: "Error",
+          payload: { message: "單字聲音格式錯誤" },
+        } as NoticeDisplay);
+        return false;
+      }
+      if (!isValidSound(definitionSound)) {
+        setNotice({
+          type: "Error",
+          payload: { message: "註釋聲音格式錯誤" },
+        } as NoticeDisplay);
+        return false;
+      }
+      if (insertIndex < 0 || insertIndex > words.length) {
+        setNotice({
+          type: "Error",
+          payload: { message: "插入單字位置錯誤" },
+        } as NoticeDisplay);
+        return false;
+      }
+      for (const word of importWords) {
+        if (word.vocabulary.length === 0) {
+          setNotice({
+            type: "Error",
+            payload: { message: "單字不得為空" },
+          } as NoticeDisplay);
+          return false;
+        }
+        if (word.vocabulary.length > 100) {
+          setNotice({
+            type: "Error",
+            payload: { message: "單字不得超過100" },
+          } as NoticeDisplay);
+          return false;
+        }
+        if (word.definition.length === 0) {
+          setNotice({
+            type: "Error",
+            payload: { message: "註釋不得為空" },
+          } as NoticeDisplay);
+          return false;
+        }
+        if (word.definition.length > 100) {
+          setNotice({
+            type: "Error",
+            payload: { message: "註釋不得超過300" },
+          } as NoticeDisplay);
+          return false;
+        }
+      }
+      setCurrentWords((prev) => {
+        const wordsArray = Object.entries(prev)
+          .sort((a, b) => a[1].order - b[1].order) // Sort by 'order'
+          .map(([_, word]) => word); // Extract only the Word objects
+
+        const firstHalf = wordsArray.slice(0, insertIndex);
+        const secondHalf = wordsArray.slice(insertIndex, wordsArray.length);
+        let startOrder = firstHalf[firstHalf.length - 1]?.order || 1;
+        const newWords: Word[] = importWords.map((w) => {
+          const newWord: Word = {
+            id: uuid(),
+            order: startOrder,
+            vocabulary: w.vocabulary,
+            definition: w.definition,
+            vocabularySound: vocabularySound,
+            definitionSound: definitionSound,
+            star: false,
+          };
+          startOrder++;
+          return newWord;
+        });
+        // 更新後半段的單字的order(如果他們小於/等於startOrder)
+        const updatedSecondHalf = secondHalf.map((word) => {
+          if (word.order <= startOrder) {
+            const newWord = { ...word, order: startOrder };
+            startOrder++;
+            return newWord;
+          }
+          return word;
+        });
+        const resWords = firstHalf.concat(newWords, updatedSecondHalf);
+        return resWords.reduce(
+          (res, word) => ({ ...res, [word.id]: word }),
+          {},
+        );
+      });
+      return true;
+    },
+    [],
+  );
 
   // 處理wordToRemove的函數
-  const handleWordToRemove = (wordID: string | null) => {
-    if (wordID === null) return;
-    // 轉成array再變回record
+  const handleWordToRemove = useCallback((wordID: string | null) => {
+    if (!wordID) return;
+
     setCurrentWords((prev) => {
-      const updatedWords = Object.fromEntries(
-        Object.entries(prev).filter(([id]) => id !== wordID),
-      );
-      return updatedWords;
+      if (!(wordID in prev)) return prev; // 🛡️ safe guard: id not found
+
+      const { [wordID]: _, ...rest } = prev;
+      return rest;
     });
-  };
+  }, []);
 
   const handleEditVocabulary = (wordID: string, newVocabulary: string) => {
     if (newVocabulary.length > 100) return;
@@ -152,36 +269,23 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
 
   const [shouldSwap, setShouldSwap, removeShouldSwap] =
     useLocalStorage<boolean>("shouldSwap", wordSet.shouldSwap);
-  const handleSwapWordAndDefinition = () => {
-    setCurrentWords((prev) =>
-      Object.fromEntries(
-        Object.entries(prev).map(([id, word]) => [
-          id,
-          {
-            ...word,
-            vocabulary: word.definition,
-            definition: word.vocabulary,
-            vocabularySound: word.definitionSound,
-            definitionSound: word.vocabularySound,
-          },
-        ]),
-      ),
-    );
-    setOldWords((prev) =>
-      Object.fromEntries(
-        Object.entries(prev).map(([id, word]) => [
-          id,
-          {
-            ...word,
-            vocabulary: word.definition,
-            definition: word.vocabulary,
-            vocabularySound: word.definitionSound,
-            definitionSound: word.vocabularySound,
-          },
-        ]),
-      ),
-    );
 
+  const swapWordFields = (words: Record<string, Word>) =>
+    Object.fromEntries(
+      Object.entries(words).map(([id, word]) => [
+        id,
+        {
+          ...word,
+          vocabulary: word.definition,
+          definition: word.vocabulary,
+          vocabularySound: word.definitionSound,
+          definitionSound: word.vocabularySound,
+        },
+      ]),
+    );
+  const handleSwapWordAndDefinition = useCallback(() => {
+    setCurrentWords((prev) => swapWordFields(prev));
+    setOldWords((prev) => swapWordFields(prev));
     // 不一定要動整包資料
     /* for (const word of words) {
       handleEditWordField(word.id, "word", word.definition);
@@ -190,11 +294,16 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
     // 可以傳一個boolean給後端，這樣後端就知道最後要調換，而這會是最後的DB更改部分
     // 而DB也不用真的去調換，而是記住這個boolean數值，傳回給前端這樣就知道要交換了
     setShouldSwap((prev) => !prev);
-  };
+  }, []);
 
   // 用order代表是否開啟，-1則關閉
   const [isAddModalOpen, setIsAddModalOpen] = useState<number>(-1);
 
+  // import modal的開關
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const closeImportModal = useCallback(() => {
+    setIsImportModalOpen(false);
+  }, []);
   // confirm modal的開關
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   // confirm modal的description
@@ -275,9 +384,11 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
               : "",
         };
 
-        // Check if any field has changed
-        const hasChanges = Object.values(updatedWord).some((value) =>
-          typeof value === "string" ? value !== "" : value !== 0,
+        // Check if any field has changed，並不看id，因為id不會為空字串，所以他一定會被檢查到(誤會成更新)
+        const hasChanges = Object.entries(updatedWord).some(
+          ([key, value]) =>
+            key !== "id" &&
+            (typeof value === "string" ? value !== "" : value !== 0),
         );
         if (hasChanges) {
           editWords.push(updatedWord);
@@ -288,12 +399,9 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
       }
     });
     // removeWords
-    const removeWords: string[] = [];
-    Object.entries(oldWords).forEach(([id, _]) => {
-      if (!(id in currentWords)) {
-        removeWords.push(id);
-      }
-    });
+    const removeWords = Object.keys(oldWords).filter(
+      (id) => !(id in currentWords),
+    );
     // wordSet
     const editWordSet: EditWordSetType = {
       id: wordSetID || "",
@@ -370,6 +478,13 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
         isPublic={wordSet.isPublic}
       />
 
+      <ImportModal
+        totalWords={words.length}
+        isModalOpen={isImportModalOpen}
+        handleClose={closeImportModal}
+        handleImport={handleImportWords}
+      />
+
       <div className="flex h-full w-full flex-col gap-4 bg-gray-100 px-[5%] py-[2rem] lg:pr-[10%] lg:pl-[5%]">
         {/* 第一列儲存按扭區 */}
         <div className="flex w-full items-center justify-between">
@@ -438,7 +553,10 @@ export default function EditWordSet({ wordSet }: { wordSet: WordSetType }) {
         </div>
         {/* 第三列設定區 */}
         <div className="flex w-full items-center justify-between py-4">
-          <div className="flex gap-2 rounded-lg border-2 border-gray-300 bg-white p-2 hover:cursor-pointer hover:bg-gray-300">
+          <div
+            onClick={() => setIsImportModalOpen(true)}
+            className="flex gap-2 rounded-lg border-2 border-gray-300 bg-white p-2 hover:cursor-pointer hover:bg-gray-300"
+          >
             <CiImport className="h-6 w-6" />
             <span>匯入</span>
           </div>

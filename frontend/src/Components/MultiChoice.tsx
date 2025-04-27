@@ -32,6 +32,7 @@ export default function MultiChoice() {
 
   const [curQuestionIndex, setCurQuestionIndex, removeCurQuestionIndex] =
     useLocalStorage(`${wordSet.id}-curQuestionIndex`, 0);
+
   // 防止curQuestionIndex造成index of out bound的錯誤
   useEffect(() => {
     if (
@@ -104,26 +105,22 @@ export default function MultiChoice() {
     return questions;
   };
 
-  const [questions, setQuestions] = useLocalStorage<multiChoiceQuestion[]>(
-    `${wordSet.id}-questions`,
-    [],
-  );
-  const [allQuestions, setAllQuestions] = useLocalStorage<
+  const [questions, setQuestions, removeQuestions] = useLocalStorage<
+    multiChoiceQuestion[]
+  >(`${wordSet.id}-questions`, []);
+  const [allQuestions, setAllQuestions, removeAllQuestions] = useLocalStorage<
     multiChoiceQuestion[]
   >(`${wordSet.id}-allQuestions`, []);
-  const [starQuestions, setStarQuestions] = useLocalStorage<
-    multiChoiceQuestion[]
-  >(`${wordSet.id}-starQuestions`, []);
+  const [starQuestions, setStarQuestions, removeStarQuestions] =
+    useLocalStorage<multiChoiceQuestion[]>(`${wordSet.id}-starQuestions`, []);
 
   // 結算的答題紀錄(紀錄那些問題是答錯的 並給出正確答案)
-  const [gradeForAll, setGradeForAll] = useLocalStorage<gradeType[]>(
-    `${wordSet.id}-gradeForAll`,
-    [],
-  );
-  const [gradeForStar, setGradeForStar] = useLocalStorage<gradeType[]>(
-    `${wordSet.id}-gradeForStar`,
-    [],
-  );
+  const [gradeForAll, setGradeForAll, removeGradeForAll] = useLocalStorage<
+    gradeType[]
+  >(`${wordSet.id}-gradeForAll`, []);
+  const [gradeForStar, setGradeForStar, removeGradeForStar] = useLocalStorage<
+    gradeType[]
+  >(`${wordSet.id}-gradeForStar`, []);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   // 處理初始化words以及所有questions 以及當words改變時也改變words和所有questions
@@ -258,17 +255,22 @@ export default function MultiChoice() {
   };
 
   // 紀錄玩家選擇過的結果，上面是給全選的，下面是給星號的
-  const [multiChoiceRecordForAll, setMultiChoiceRecordForAll] = useLocalStorage<
-    multiChoiceRecordType[]
-  >(
+  const [
+    multiChoiceRecordForAll,
+    setMultiChoiceRecordForAll,
+    removeMultiChoiceRecordForAll,
+  ] = useLocalStorage<multiChoiceRecordType[]>(
     `${wordSet.id}-multiChoiceRecordForAll`,
     Array(wordSet.words.length).fill(null), // 初始化全為null
   );
-  const [multiChoiceRecordForStar, setMultiChoiceRecordForStar] =
-    useLocalStorage<multiChoiceRecordType[]>(
-      `${wordSet.id}-multiChoiceRecordForStar`,
-      Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
-    );
+  const [
+    multiChoiceRecordForStar,
+    setMultiChoiceRecordForStar,
+    removeMultiChoiceRecordForStar,
+  ] = useLocalStorage<multiChoiceRecordType[]>(
+    `${wordSet.id}-multiChoiceRecordForStar`,
+    Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
+  );
 
   // 處理選擇後的動畫/紀錄選擇後的結果
   const allAnswered = onlyStar
@@ -427,6 +429,25 @@ export default function MultiChoice() {
     return null;
   }
 
+  // 如果wordSet改變了(新增了單字)導致原本localStorage的array不夠用(會index out of bound)，則先return null
+  // 再透過useEffect重置，並重整頁面
+  useEffect(() => {
+    if (wordSet.words.length > multiChoiceRecordForAll.length) {
+      removeCurQuestionIndex();
+      removeQuestions();
+      removeAllQuestions();
+      removeStarQuestions();
+      removeMultiChoiceRecordForAll();
+      removeMultiChoiceRecordForStar();
+      removeGradeForAll();
+      removeGradeForStar();
+      navigate(0);
+    }
+  }, [wordSet]);
+  if (wordSet.words.length > multiChoiceRecordForAll.length) {
+    return null;
+  }
+
   if (isLoading) {
     return <Loader />;
   }
@@ -489,7 +510,9 @@ export default function MultiChoice() {
                   {curQuestionIndex + 1}
                 </span>
               </p>
-              <span className="text-[.8rem] sm:text-[1rem]">註釋</span>
+              <span className="text-[.8rem] sm:text-[1rem]">
+                {wordSet.shouldSwap ? "單字" : "註釋"}
+              </span>
               <div className="flex items-center justify-center gap-4">
                 <div className="break-word text-sm font-bold text-black md:text-lg lg:text-2xl">
                   {questions[curQuestionIndex].q[0]}
@@ -515,7 +538,11 @@ export default function MultiChoice() {
                 multiChoiceRecordForStar[curQuestionIndex] === null ? (
                   <>
                     <div className="relative w-full overflow-y-hidden">
-                      <p>選擇正確的單字</p>
+                      <p>
+                        {wordSet.shouldSwap
+                          ? "選擇正確的註釋"
+                          : "選擇正確的單字"}
+                      </p>
                       <span
                         className={`${isAnimating ? "top-0" : "top-full"} ${answerCorrect ? "text-green-600" : "text-red-600"} absolute left-[50%] translate-x-[-50%] font-bold transition-all duration-200`}
                       >
@@ -556,7 +583,11 @@ export default function MultiChoice() {
                 ) : (
                   <>
                     <div className="relative w-full overflow-y-hidden">
-                      <p>選擇正確的單字</p>
+                      <p>
+                        {wordSet.shouldSwap
+                          ? "選擇正確的註釋"
+                          : "選擇正確的單字"}
+                      </p>
                       <span
                         className={`top-0 ${multiChoiceRecordForStar[curQuestionIndex].isCorrect ? "text-green-600" : "text-red-600"} absolute left-[50%] translate-x-[-50%] font-bold`}
                       >
@@ -587,7 +618,9 @@ export default function MultiChoice() {
               ) : multiChoiceRecordForAll[curQuestionIndex] === null ? (
                 <>
                   <div className="relative w-full overflow-y-hidden">
-                    <p>選擇正確的單字</p>
+                    <p>
+                      {wordSet.shouldSwap ? "選擇正確的註釋" : "選擇正確的單字"}
+                    </p>
                     <span
                       className={`${isAnimating ? "top-0" : "top-full"} ${answerCorrect ? "text-green-600" : "text-red-600"} absolute left-[50%] translate-x-[-50%] font-bold transition-all duration-200`}
                     >
@@ -628,7 +661,9 @@ export default function MultiChoice() {
               ) : (
                 <>
                   <div className="relative w-full overflow-y-hidden">
-                    <p>選擇正確的單字</p>
+                    <p>
+                      {wordSet.shouldSwap ? "選擇正確的註釋" : "選擇正確的單字"}
+                    </p>
                     <span
                       className={`top-0 ${multiChoiceRecordForAll[curQuestionIndex].isCorrect ? "text-green-600" : "text-red-600"} absolute left-[50%] translate-x-[-50%] font-bold`}
                     >

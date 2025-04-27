@@ -188,7 +188,7 @@ export default function CreateWordSet() {
         } as NoticeDisplay);
         return false;
       }
-      if (insertIndex < -1 || insertIndex > words.length) {
+      if (insertIndex < 0 || insertIndex > words.length) {
         setNotice({
           type: "Error",
           payload: { message: "插入單字位置錯誤" },
@@ -226,15 +226,10 @@ export default function CreateWordSet() {
         }
       }
 
-      let index = insertIndex;
-      if (index === -1) {
-        // 抓最後一個index
-        index = words.length;
-      }
       const newIDs: string[] = [];
       setWords((words) => {
-        const firstHalf = words.slice(0, index);
-        const secondHalf = words.slice(index, words.length);
+        const firstHalf = words.slice(0, insertIndex);
+        const secondHalf = words.slice(insertIndex, words.length);
         let startOrder = firstHalf[firstHalf.length - 1]?.order || 1;
         const newWords = [];
         for (const w of importWords) {

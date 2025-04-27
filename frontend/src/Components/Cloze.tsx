@@ -58,14 +58,12 @@ export default function Cloze() {
   }, [wordSet, curQuestionIndex]);
 
   // 結算的答題紀錄(紀錄那些問題是答錯的 並給出正確答案)
-  const [gradeForAll, setGradeForAll] = useLocalStorage<gradeType[]>(
-    `${wordSet.id}-clozeGradeForAll`,
-    [],
-  );
-  const [gradeForStar, setGradeForStar] = useLocalStorage<gradeType[]>(
-    `${wordSet.id}-clozeGradeForStar`,
-    [],
-  );
+  const [gradeForAll, setGradeForAll, removeGradeForAll] = useLocalStorage<
+    gradeType[]
+  >(`${wordSet.id}-clozeGradeForAll`, []);
+  const [gradeForStar, setGradeForStar, removeGradeForStar] = useLocalStorage<
+    gradeType[]
+  >(`${wordSet.id}-clozeGradeForStar`, []);
 
   useEffect(() => {
     let newWords = wordSet.shouldSwap
@@ -195,18 +193,16 @@ export default function Cloze() {
   };
 
   // 紀錄玩家選擇過的結果，上面是給全選的，下面是給星號的
-  const [clozeRecordForAll, setClozeRecordForAll] = useLocalStorage<
-    clozeRecordType[]
-  >(
-    `${wordSet.id}-clozeRecordForAll`,
-    Array(wordSet.words.length).fill(null), // 初始化全為null
-  );
-  const [clozeRecordForStar, setClozeRecordForStar] = useLocalStorage<
-    clozeRecordType[]
-  >(
-    `${wordSet.id}-clozeRecordForStar`,
-    Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
-  );
+  const [clozeRecordForAll, setClozeRecordForAll, removeClozeRecordForAll] =
+    useLocalStorage<clozeRecordType[]>(
+      `${wordSet.id}-clozeRecordForAll`,
+      Array(wordSet.words.length).fill(null), // 初始化全為null
+    );
+  const [clozeRecordForStar, setClozeRecordForStar, removeClozeRecordForStar] =
+    useLocalStorage<clozeRecordType[]>(
+      `${wordSet.id}-clozeRecordForStar`,
+      Array(wordSet.words.filter((word) => word.star).length).fill(null), // 初始化全為null
+    );
 
   // 處理選擇後的動畫/紀錄選擇後的結果
   const allAnswered = onlyStar
@@ -361,6 +357,22 @@ export default function Cloze() {
     return null;
   }
 
+  // 如果wordSet改變了(新增了單字)導致原本localStorage的array不夠用(會index out of bound)，則先return null
+  // 再透過useEffect重置，並重整頁面
+  useEffect(() => {
+    if (wordSet.words.length > clozeRecordForAll.length) {
+      removeCurQuestionIndex();
+      removeClozeRecordForAll();
+      removeClozeRecordForStar();
+      removeGradeForAll();
+      removeGradeForStar();
+      navigate(0);
+    }
+  }, [wordSet]);
+  if (wordSet.words.length > clozeRecordForAll.length) {
+    return null;
+  }
+
   return (
     <>
       {/* overlay for grade modal */}
@@ -418,7 +430,9 @@ export default function Cloze() {
                   {curQuestionIndex + 1}
                 </span>
               </p>
-              <span className="text-[.8rem] sm:text-[1rem]">註釋</span>
+              <span className="text-[.8rem] sm:text-[1rem]">
+                {wordSet.shouldSwap ? "單字" : "註釋"}
+              </span>
               <div className="flex items-center justify-center gap-4">
                 <div className="break-word text-sm font-bold text-black md:text-lg lg:text-2xl">
                   {words[curQuestionIndex].definition}
@@ -492,7 +506,7 @@ export default function Cloze() {
                           ref={inputRef}
                           onKeyDown={(e) => enterSubmit(e)}
                           className={`${isAnimating ? (answerCorrect ? "border-green-600" : "border-red-600") : "border-transparent"} flex h-[3rem] w-full items-center rounded-lg border-2 bg-gray-200 px-2 py-3 font-bold text-black outline-none focus:border-[var(--light-theme-opacity-color)] focus:bg-white`}
-                          placeholder="輸入英語"
+                          placeholder="輸入答案"
                         ></input>
                         <div
                           className={`${isAnimating ? "bottom-0" : "bottom-[-25%]"} absolute left-0 font-bold text-green-600 transition-all duration-200`}
@@ -582,7 +596,7 @@ export default function Cloze() {
                         ref={inputRef}
                         onKeyDown={(e) => enterSubmit(e)}
                         className={`${isAnimating ? (answerCorrect ? "border-green-600" : "border-red-600") : "border-transparent"} flex h-[3rem] w-full items-center rounded-lg border-2 bg-gray-200 px-2 py-3 font-bold text-black outline-none focus:border-[var(--light-theme-opacity-color)] focus:bg-white`}
-                        placeholder="輸入英語"
+                        placeholder="輸入答案"
                       ></input>
                       <div
                         className={`${isAnimating ? "bottom-0" : "bottom-[-25%]"} absolute left-0 font-bold text-green-600 transition-all duration-200`}

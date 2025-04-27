@@ -61,21 +61,21 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const [words, setWords] = useState<Word[]>(wordSet.words);
-  // 若後端說要交換word跟definition 就要交換
-  useEffect(() => {
+  const [words, setWords] = useState<Word[]>(() => {
+    // 若後端說要交換vocabulary跟definition 就要交換
     if (wordSet.shouldSwap) {
-      setWords((prev) =>
-        prev.map((word) => ({
-          ...word,
-          vocabulary: word.definition,
-          definition: word.vocabulary,
-          vocabularySound: word.definitionSound,
-          definitionSound: word.vocabularySound,
-        })),
-      );
+      return wordSet.words.map((word) => ({
+        ...word,
+        vocabulary: word.definition,
+        definition: word.vocabulary,
+        vocabularySound: word.definitionSound,
+        definitionSound: word.vocabularySound,
+      }));
+    } else {
+      return wordSet.words;
     }
-  }, []);
+  });
+
   // 全選星星
   const handleStarAll = () => {
     const currentState = sortedWords.length === sortedStarWords.length;
@@ -85,7 +85,7 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
         newStar: true,
       } as ToggleAllWordStarRequest)
         .then(() => {
-          setWords(words.map((word) => ({ ...word, star: true })));
+          setWords((prev) => prev.map((word) => ({ ...word, star: true })));
         })
         .catch((error) => {
           setNotice(error as NoticeDisplay);
@@ -96,7 +96,7 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
         newStar: false,
       } as ToggleAllWordStarRequest)
         .then(() => {
-          setWords(words.map((word) => ({ ...word, star: false })));
+          setWords((prev) => prev.map((word) => ({ ...word, star: false })));
         })
         .catch((error) => {
           setNotice(error as NoticeDisplay);
@@ -105,14 +105,14 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
   };
 
   // 單選星星
-  const handleStarOne = (id: string) => {
+  const handleStarOne = useCallback((id: string) => {
     postRequest(`${PATH}/toggleWordStar`, {
       wordSetID: wordSet.id,
       wordID: id,
     } as ToggleWordStarRequest)
       .then(() => {
-        setWords(
-          words.map((word) =>
+        setWords((prev) =>
+          prev.map((word) =>
             word.id === id ? { ...word, star: !word.star } : word,
           ),
         );
@@ -120,7 +120,7 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
       .catch((error) => {
         setNotice(error as NoticeDisplay);
       });
-  };
+  }, []);
 
   // 按字母順序(A-Z)且不管大小寫，並用useMemo減少re-render開銷
   const sortedWords = useMemo(() => {
