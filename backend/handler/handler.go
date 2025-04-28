@@ -1048,7 +1048,7 @@ func handleGetWordSetCard(w http.ResponseWriter, r *http.Request) {
 		writeErrorJson(w, Type.PageDisplayError{StatusCode: http.StatusInternalServerError, Message: "搜尋值為空"})
 		return
 	}
-	fmt.Println("query:", query)
+	log.Println("wordSet card query:", query)
 	curNumber, err := strconv.Atoi(r.URL.Query().Get("curNumber")) // to get the query params called "curNumber"
 	if err != nil {
 		writeErrorJson(w, Type.PageDisplayError{StatusCode: http.StatusInternalServerError, Message: "搜尋值錯誤"})
@@ -2141,7 +2141,7 @@ func getMails(userID string) ([]Type.MailViewType, error) {
 		return nil, err
 	}
 
-	var mails []Type.MailViewType
+	mails := make([]Type.MailViewType, 0) 
 	mailColl := DB.Client.Database("go-quizlet").Collection("mails")
 	filter := bson.M{"id":bson.M{"$in":user.Mails}}
 	findingContext, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -2151,7 +2151,7 @@ func getMails(userID string) ([]Type.MailViewType, error) {
 		if errors.Is(err, context.DeadlineExceeded) {
 			return nil, errors.New("超時錯誤 請重試")
 		}
-		return nil, errors.New("查詢錯誤 請重試")
+		return nil, errors.New("郵件查詢錯誤 請重試")
 	}
 	if err := cursor.All(findingContext, &mails); err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
@@ -2269,7 +2269,7 @@ func getRecentVisit(w http.ResponseWriter, r *http.Request) {
 			writeErrorJson(w, Type.MessageDisplayError{Message: "超時錯誤 請重試"})
 			return
 		}
-		writeErrorJson(w, Type.MessageDisplayError{Message: "查詢錯誤 請重試"})
+		writeErrorJson(w, Type.MessageDisplayError{Message: "近期查看查詢錯誤 請重試"})
 		return
 	}
 	if err = cursor.All(findingContext, &record); err != nil {
@@ -2313,7 +2313,7 @@ func getNewWordSet(w http.ResponseWriter, r *http.Request) {
 			writeErrorJson(w, Type.MessageDisplayError{Message: "超時錯誤 請重試"})
 			return
 		}
-		writeErrorJson(w, Type.MessageDisplayError{Message: "查詢錯誤 請重試"})
+		writeErrorJson(w, Type.MessageDisplayError{Message: "最新單字集查詢錯誤 請重試"})
 		return
 	}
 	newWordSet := make([]Type.HomePageWordSet, 0, 6)
@@ -2347,7 +2347,7 @@ func getPopularWordSet(w http.ResponseWriter, r *http.Request) {
 			writeErrorJson(w, Type.MessageDisplayError{Message: "超時錯誤 請重試"})
 			return
 		}
-		writeErrorJson(w, Type.MessageDisplayError{Message: "查詢錯誤 請重試"})
+		writeErrorJson(w, Type.MessageDisplayError{Message: "熱門單字集查詢錯誤 請重試"})
 		return
 	}
 	popularWordSet := make([]Type.HomePageWordSet, 0, 6)
@@ -2509,7 +2509,7 @@ func logError(request Type.LogErrorRequest) (string, error) {
 
 	return "", nil
 }
-
+// 改密碼
 func requestValidateCode(w http.ResponseWriter, r *http.Request) {
 	mode := r.URL.Query().Get("changeMode")
 	if mode != "account" && mode != "password" {
@@ -2567,7 +2567,7 @@ func requestValidateCode(w http.ResponseWriter, r *http.Request) {
 		writeErrorJson(w, Type.MessageDisplayError{Message: "資料庫查詢錯誤 請重試"})
 		return 
 	}
-	if record.Expire - int64(Consts.MinResendTimeBuffer) > utils.GetNow() {
+	if record.Expire - int64(Consts.ResetPasswordValidateCodeExpire) + int64(Consts.MinResendTimeBuffer) > utils.GetNow() {
 		writeErrorJson(w, Type.MessageDisplayError{Message: "請勿在3分鐘內重複申請驗證碼"})
 		return 
 	}
@@ -2754,7 +2754,7 @@ func sendActivationEmail(w http.ResponseWriter, r *http.Request) {
 	activateEmailColl := DB.Client.Database("go-quizlet").Collection("activateEmail")
 	err = activateEmailColl.FindOne(ctx, filter).Decode(&record)
 	if err == nil {
-		if record.Expire - int64(Consts.MinActivateEmailExpire) > utils.GetNow() {
+		if record.Expire - int64(Consts.ActivateEmailExpire) + int64(Consts.MinActivateEmailExpire) > utils.GetNow() {
 			writeErrorJson(w, Type.MessageDisplayError{Message: "請勿在3分鐘內重複請求"})
 			return
 		}

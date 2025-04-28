@@ -18,6 +18,7 @@ import { useLogInContextProvider } from "../Context/LogInContextProvider";
 import { useNoticeDisplayContextProvider } from "../Context/NoticeDisplayContextProvider";
 import SettingWordSetModal from "./SettingWordSetModal";
 import ImportModal from "./ImportModal";
+import ContentEditable from "./ContentEditable";
 
 export default function CreateWordSet() {
   const oneTimeID = uuid();
@@ -638,20 +639,18 @@ export default function CreateWordSet() {
               </div>
               <div className="flex max-h-auto min-h-[110px] w-full flex-col gap-4 rounded-b-lg bg-white p-4 sm:h-[130px] sm:flex-row sm:gap-0">
                 <div className="flex w-full flex-col items-start justify-center gap-2 sm:w-[40%]">
-                  <textarea
-                    value={word.vocabulary}
-                    onChange={(e) => {
-                      const text = e.target.value;
-                      if (textCount(text) > 100) return;
+                  <ContentEditable
+                    content={word.vocabulary}
+                    updateContent={(newContent: string) => {
+                      if (textCount(newContent) > 100) return;
                       setVocabularyError((prev) => ({
                         ...prev,
                         [word.id]: "",
                       }));
-                      handleEditVocabulary(word.id, e.target.value);
+                      handleEditVocabulary(word.id, newContent);
                     }}
-                    rows={1}
                     className={`${vocabularyError[word.id] === "" && vocabularySoundError[word.id] === "" ? "" : "border-red-500"} w-full resize-none border-b-[3px] border-black text-[1.2rem] break-words text-black outline-none focus:border-amber-300`}
-                  ></textarea>
+                  ></ContentEditable>
                   <div className="flex w-full items-center justify-between text-[.8rem] md:text-[1rem]">
                     {vocabularyError[word.id] === "" &&
                     vocabularySoundError[word.id] === "" ? (
@@ -686,19 +685,18 @@ export default function CreateWordSet() {
                   </div>
                 </div>
                 <div className="ml-auto flex w-full flex-col items-start justify-center gap-2 sm:w-[55%]">
-                  <textarea
-                    value={word.definition}
-                    onChange={(e) => {
-                      const text = e.target.value;
-                      if (textCount(text) > 300) return;
+                  <ContentEditable
+                    content={word.definition}
+                    updateContent={(newContent: string) => {
+                      if (textCount(newContent) > 300) return;
                       setDefinitionError((prev) => ({
                         ...prev,
                         [word.id]: "",
                       }));
-                      handleEditDefinition(word.id, e.target.value);
+                      handleEditDefinition(word.id, newContent);
                     }}
                     className={`${definitionError[word.id] === "" && definitionSoundError[word.id] === "" ? "" : "border-red-500"} w-full resize-none border-b-[3px] border-black text-[1.2rem] break-words text-black outline-none focus:border-amber-300`}
-                  ></textarea>
+                  ></ContentEditable>
                   <div className="flex w-full items-center justify-between text-[.8rem] md:text-[1rem]">
                     {definitionError[word.id] === "" &&
                     definitionSoundError[word.id] === "" ? (

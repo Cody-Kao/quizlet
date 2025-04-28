@@ -97,7 +97,9 @@ export default function MailBox({
         </header>
 
         <div className="flex flex-col">
-          <form className="mb-[32px] flex h-[50px] max-w-[450px] items-center rounded-xl bg-[#fff]">
+          <form
+            className={`${fetchedData.length === 0 ? "pointer-events-none opacity-50 grayscale" : ""} mb-[32px] flex h-[50px] max-w-[450px] items-center rounded-xl bg-[#fff]`}
+          >
             <input
               className="w-full max-w-full p-[.8rem] placeholder-gray-900 outline-none"
               type="text"
@@ -117,45 +119,49 @@ export default function MailBox({
             </button>
           </form>
           {/* 組件container */}
-          {data.map((DateAndData, index) => (
-            <div className="mb-[4rem] flex flex-col gap-[.5rem]" key={index}>
-              <div className="flex w-full items-center">
-                <p className="mr-4 font-bold whitespace-nowrap">
-                  {/* 組件日期 */}
-                  {DateAndData[0]}
-                </p>
-                <div className="h-[2px] flex-grow bg-gray-300"></div>
-              </div>
-              {/* 組件白色container */}
-              {DateAndData[1].map((data) => (
-                <div
-                  onClick={() => {
-                    setOpenMailID(data.id), setIsMailModalOpen(true);
-                  }}
-                  key={data.id}
-                  className="relative mb-[.8rem] flex flex-col flex-wrap gap-[.5rem] overflow-hidden rounded-xl bg-[#fff] p-[.8rem] shadow-lg after:absolute after:bottom-0 after:left-0 after:h-[5px] after:w-full after:scale-x-0 after:rounded-xl after:bg-[var(--light-theme-color)] after:opacity-[.5] after:content-[''] hover:cursor-pointer hover:after:scale-x-100 sm:gap-[1rem]"
-                >
-                  {data.read === false && (
-                    <div className="absolute top-0 left-0 h-[12%] w-full bg-[var(--light-theme-color)] opacity-[.9]">
-                      <span className="absolute top-[-50%] right-0 text-[1.5rem] font-bold text-red-400">
-                        New
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="relative after:absolute after:right-[-20%] after:bottom-[50%] after:h-[18px] after:w-[2px] after:translate-y-[50%] after:bg-black after:content-['']">
-                      寄件者
-                    </span>
-                    <UserLink userID={ADMIN.id} />
-                  </div>
-                  <div className="flex flex-wrap items-center">
-                    <p className="text-[1.5rem] font-bold">{data.title}</p>
-                    <span className="ml-auto">{formatTime(data.date)}</span>
-                  </div>
+          {fetchedData.length > 0 ? (
+            data.map((DateAndData, index) => (
+              <div className="mb-[4rem] flex flex-col gap-[.5rem]" key={index}>
+                <div className="flex w-full items-center">
+                  <p className="mr-4 font-bold whitespace-nowrap">
+                    {/* 組件日期 */}
+                    {DateAndData[0]}
+                  </p>
+                  <div className="h-[2px] flex-grow bg-gray-300"></div>
                 </div>
-              ))}
-            </div>
-          ))}
+                {/* 組件白色container */}
+                {DateAndData[1].map((data) => (
+                  <div
+                    onClick={() => {
+                      setOpenMailID(data.id), setIsMailModalOpen(true);
+                    }}
+                    key={data.id}
+                    className="relative mb-[.8rem] flex flex-col flex-wrap gap-[.5rem] overflow-hidden rounded-xl bg-[#fff] p-[.8rem] shadow-lg after:absolute after:bottom-0 after:left-0 after:h-[5px] after:w-full after:scale-x-0 after:rounded-xl after:bg-[var(--light-theme-color)] after:opacity-[.5] after:content-[''] hover:cursor-pointer hover:after:scale-x-100 sm:gap-[1rem]"
+                  >
+                    {data.read === false && (
+                      <div className="absolute top-0 left-0 h-[12%] w-full bg-[var(--light-theme-color)] opacity-[.9]">
+                        <span className="absolute top-[-50%] right-0 text-[1.5rem] font-bold text-red-400">
+                          New
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="relative after:absolute after:right-[-20%] after:bottom-[50%] after:h-[18px] after:w-[2px] after:translate-y-[50%] after:bg-black after:content-['']">
+                        寄件者
+                      </span>
+                      <UserLink userID={ADMIN.id} />
+                    </div>
+                    <div className="flex flex-wrap items-center">
+                      <p className="text-[1.5rem] font-bold">{data.title}</p>
+                      <span className="ml-auto">{formatTime(data.date)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))
+          ) : (
+            <div>信箱為空...</div>
+          )}
         </div>
       </div>
     </>

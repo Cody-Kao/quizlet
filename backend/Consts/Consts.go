@@ -25,8 +25,8 @@ var (
 	MaxDefinitionLen = 300
 	MaxUploadSize = 10 << 20 // 10 MB
 	MaxDataFetch = 6 // 一次最多拿6比資料
-	ResetPasswordValidateCodeExpire = 5 * 60 // 5分鐘換算成秒數 這是驗證碼時效
-	MinResendTimeBuffer = 3 * 60 // 這是重新申請驗證碼的間隔時間
+	ResetPasswordValidateCodeExpire = 5 * 60 // 5分鐘換算成秒數 這是改密碼驗證碼時效
+	MinResendTimeBuffer = 3 * 60 // 這是重新申請改密碼驗證碼的間隔時間
 	ActivateEmailExpire = 5 * 60 // 5分鐘內完成email驗證
 	MinActivateEmailExpire = 3 * 60 // 這是重新申請郵件開通的間隔時間
 	ActivatedEmailRegisterExpire = 5 * 60 // 5分鐘內完成該email註冊
