@@ -9,6 +9,7 @@ import { PATH } from "../Consts/consts";
 import { CreateFeedbackRequest } from "../Types/request";
 import { useLogInContextProvider } from "../Context/LogInContextProvider";
 import { useNoticeDisplayContextProvider } from "../Context/NoticeDisplayContextProvider";
+import ContentEditable from "./ContentEditable";
 
 export default function CreateFeedback() {
   const { user } = useLogInContextProvider();
@@ -41,8 +42,12 @@ export default function CreateFeedback() {
       setTitleError("標題不得超過50字元");
       return;
     }
+    if (content.trim().length === 0) {
+      setContentError("敘述不得為空");
+      return;
+    }
     if (content.length > 300) {
-      setContentError("單字集敘述不得超過300字元");
+      setContentError("敘述不得超過300字元");
       return;
     }
 
@@ -151,16 +156,15 @@ export default function CreateFeedback() {
             )}
           </div>
           <div className="flex w-full flex-col gap-2 rounded-lg bg-white px-4 py-2 text-black">
-            <textarea
-              value={content}
-              onChange={(e) => {
-                const text = e.target.value;
-                if (textCount(text) > 300) return;
+            <h2>任何想說的話</h2>
+            <ContentEditable
+              content={content}
+              updateContent={(newContent: string) => {
+                if (textCount(newContent) > 300) return;
                 setContentError("");
-                setContent(text);
+                setContent(newContent);
               }}
-              placeholder="任何想說的話"
-              className="w-full resize-none font-bold outline-none focus:border-b-2 focus:border-amber-300 md:text-[1.2rem]"
+              className={`${contentError === "" ? "" : "border-b-red-500"} w-full border-b-2 border-gray-300 font-bold outline-none focus:border-b-2 focus:border-amber-300 md:text-[1.2rem]`}
             />
             {contentError === "" ? (
               <span className="pt-2 text-[.8rem] font-light md:text-[1rem]">
