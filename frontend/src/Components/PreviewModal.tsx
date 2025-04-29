@@ -20,6 +20,7 @@ export default function PreviewModal({
   closeModal: () => void;
 }) {
   const { setNotice } = useNoticeDisplayContextProvider();
+  const controllerRef = useRef<AbortController>(null);
   const [previewWords, setPreviewWords] = useState<Word[]>([]);
   const [previewWordsNumber, setPreviewWordsNumber] = useState<number>(0); // 當前單字數量，之後最多一次多抓6個
   const [isPreviewLoading, setIsPreviewLoading] = useState<boolean>(false); // 抓preview words時
@@ -51,9 +52,13 @@ export default function PreviewModal({
   }, [wordSetID]);
 
   useEffect(() => {
-    console.log(shouldSwap);
     if (isAtBottom && haveMore) {
       // 抓取更多words
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+      controllerRef.current = new AbortController();
+      const signal = controllerRef.current?.signal;
       setIsPreviewLoading(true);
       getRequest<WordSetCardPreview>(
         `${PATH}/getPreviewWords/?wordSetID=${wordSetID}&curNumber=${previewWordsNumber}`,
@@ -61,6 +66,7 @@ export default function PreviewModal({
           words: z.array(Word_zod),
           haveMore: z.boolean(),
         }),
+        signal,
       )
         .then((data) => {
           console.log("data:", data.words);
@@ -77,11 +83,19 @@ export default function PreviewModal({
           setHaveMore(data.haveMore);
         })
         .catch((error) => {
+          if (error.type === "AbortError") {
+            console.log(error.payload.message);
+            return;
+          }
           setNotice(error as NoticeDisplay);
         })
         .finally(() => {
           setIsPreviewLoading(false);
         });
+
+      return () => {
+        setIsPreviewLoading(false);
+      };
     }
   }, [isAtBottom, shouldSwap]);
 

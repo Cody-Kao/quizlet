@@ -587,10 +587,10 @@ func handleAccountPasswordLogIn(w http.ResponseWriter, r *http.Request) {
 	// validate
 	if err := validate.Struct(request); err != nil {
 		// Handle validation error
+		log.Println("帳密登入格式錯誤")
 		writeErrorJson(w, Type.MessageDisplayError{Message: "帳密登入格式錯誤"})
 		return
 	}
-
 	// check if the account exists
 	coll := DB.Client.Database("go-quizlet").Collection("users")
 	filter := bson.M{"email":request.UserEmail}
@@ -604,6 +604,7 @@ func handleAccountPasswordLogIn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if errors.Is(err, mongo.ErrNoDocuments) {
+			log.Println("此帳號不存在")
 			writeErrorJson(w, Type.MessageDisplayError{Message: "此帳號不存在"})
 			return
 		}
@@ -612,11 +613,13 @@ func handleAccountPasswordLogIn(w http.ResponseWriter, r *http.Request) {
 	}
 	// 確認該帳號是否為OAuth而不是一般帳號
 	if user.IsGoogle {
+		log.Println("帳號登入錯誤")
 		writeErrorJson(w, Type.MessageDisplayError{Message: "帳號登入錯誤"})
 		return
 	}
 	// check if the password is correct
 	if ok := utils.CheckHashedPassword(request.UserPassword, user.Password); !ok {
+		log.Println("使用者密碼錯誤")
 		writeErrorJson(w, Type.MessageDisplayError{Message: "使用者密碼錯誤"})
 		return
 	}
@@ -626,6 +629,7 @@ func handleAccountPasswordLogIn(w http.ResponseWriter, r *http.Request) {
 	// sign JWT
 	tokenString, err := utils.SignJWT(user.ID, Consts.DefaultJWTExpireTime)
 	if err != nil {
+		log.Println("JWT簽發錯誤 請重試")
 		writeErrorJson(w, Type.MessageDisplayError{Message: "JWT簽發錯誤 請重試"})
 		return
 	}
@@ -1158,8 +1162,14 @@ func UpdateWordSet(request Type.EditWordSetRequest) (string, error) {
 			return fmt.Errorf("failed to start transaction: %w", err)
 		}
 
-		collection := DB.Client.Database("go-quizlet").Collection("wordSets")
+		wordSetColl := DB.Client.Database("go-quizlet").Collection("wordSets")
 		filter := bson.M{"id": request.WordSet.ID}
+		var existingWordSet Type.WordSet
+		err = wordSetColl.FindOne(sc, filter).Decode(&existingWordSet)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return fmt.Errorf("failed to find existing wordSet: %w", err)
+		}
 
 		// ----------------------------
 		// Step 1: Add new words
@@ -1194,7 +1204,7 @@ func UpdateWordSet(request Type.EditWordSetRequest) (string, error) {
 			addUpdate := bson.M{
 				"$push": bson.M{"words": bson.M{"$each": request.AddWords}},
 			}
-			if _, err := collection.UpdateOne(sc, filter, addUpdate); err != nil {
+			if _, err := wordSetColl.UpdateOne(sc, filter, addUpdate); err != nil {
 				session.AbortTransaction(sc)
 				return fmt.Errorf("failed to update added words: %w", err)
 			}
@@ -1265,7 +1275,7 @@ func UpdateWordSet(request Type.EditWordSetRequest) (string, error) {
 			editUpdate := bson.M{"$set": setFields}
 			updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{Filters: arrayFilters})
 
-			res, err := collection.UpdateOne(sc, filter, editUpdate, updateOpts)
+			res, err := wordSetColl.UpdateOne(sc, filter, editUpdate, updateOpts)
 			if err != nil {
 				session.AbortTransaction(sc)
 				return fmt.Errorf("failed to update edited fields: %w", err)
@@ -1284,7 +1294,7 @@ func UpdateWordSet(request Type.EditWordSetRequest) (string, error) {
 			removeUpdate := bson.M{
 				"$pull": bson.M{"words": bson.M{"id": bson.M{"$in": request.RemoveWords}}},
 			}
-			if _, err := collection.UpdateOne(sc, filter, removeUpdate); err != nil {
+			if _, err := wordSetColl.UpdateOne(sc, filter, removeUpdate); err != nil {
 				session.AbortTransaction(sc)
 				return fmt.Errorf("failed to update removed words: %w", err)
 			}
@@ -1293,10 +1303,10 @@ func UpdateWordSet(request Type.EditWordSetRequest) (string, error) {
 		// ----------------------------
 		// Step 4: Update wordCnt
 		// ----------------------------
-		newWordCnt := len(request.WordSet.Words) + len(request.AddWords) - len(request.RemoveWords)
+		newWordCnt := len(existingWordSet.Words) + len(request.AddWords) - len(request.RemoveWords)
 		wordCntUpdate := bson.M{"$set": bson.M{"wordCnt": newWordCnt}}
 
-		if _, err := collection.UpdateOne(sc, filter, wordCntUpdate); err != nil {
+		if _, err := wordSetColl.UpdateOne(sc, filter, wordCntUpdate); err != nil {
 			session.AbortTransaction(sc)
 			return fmt.Errorf("failed to update word count: %w", err)
 		}

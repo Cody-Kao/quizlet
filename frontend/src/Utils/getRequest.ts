@@ -4,9 +4,11 @@ import { APIResponse } from "../Types/response";
 export const getRequest = async <T>(
   url: string,
   schema: z.Schema<T>,
+  signal?: AbortSignal,
 ): Promise<T> => {
   try {
     const response = await fetch(url, {
+      signal,
       method: "GET",
       credentials: "include",
     });
@@ -65,6 +67,12 @@ export const getRequest = async <T>(
       throw apiResponse;
     }
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw {
+        type: "AbortError",
+        payload: { message: "請求已中止" },
+      };
+    }
     // validate error structure
     const validatedError = z
       .object({
