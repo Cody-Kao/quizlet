@@ -16,7 +16,6 @@ import (
 	"slices"
 	"sort"
 	"strconv"
-	"sync"
 
 	//"log"
 	"net/http"
@@ -29,7 +28,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"golang.org/x/time/rate"
 )
 
 // 用來validate bson field
@@ -40,16 +38,6 @@ var validate = validator.New()
 
 // 任何資料相關操作都要附上userID，確保是本人要求更改，並加上CORS的middleware
 
-// http.HandlerFunc is also implemented the interface the http.Handler
-// and the func (w http.ResponseWriter, r *http.Request) is a form of http.HandlerFunc, but not essentially
-type middlewareFunc func(http.Handler) http.Handler
-
-func chainMiddleware(h http.Handler, m ...middlewareFunc) http.Handler {
-	for i := len(m) - 1; i >= 0; i-- {
-		h = m[i](h)
-	}
-	return h
-}
 
 func CreateHandler() http.Handler {
 	mux := http.NewServeMux()
@@ -108,30 +96,6 @@ func getIP(r *http.Request) (string, error) {
 		return "", err
 	}
 	return host, nil
-}
-
-// 用sync map儲存ip對應limiter
-var limiterIPMap sync.Map
-
-// API rate limiter
-func RateLimit(next http.Handler) http.Handler {
-	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
-		IP, err := getIP(r)
-		if err != nil {
-			writeErrorJson(w, Type.MessageDisplayError{Message: "IP出錯"})
-			log.Println("取得IP出錯", err.Error())
-			return
-		}
-		limiterAny, _ := limiterIPMap.LoadOrStore(IP, rate.NewLimiter(Consts.APILimit, Consts.APIBurst))
-		limiter := limiterAny.(*rate.Limiter)
-
-		if !limiter.Allow() {
-			writeErrorJson(w, Type.MessageDisplayError{Message: "太多請求 請稍後"})
-			log.Println("IP", IP, "短時間送出太多請求")
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
 }
 
 /*
@@ -904,36 +868,6 @@ func PostValidateWordSetAuthor[T Type.WordSetsRelatedRequest](handlerFunc func(T
 		}
 	}
 }
-// 直接包mux讓此middleware變成default
-func EnableCORS(next http.Handler) http.Handler {
-	// 包http.HandlerFunc()，讓裡面func(w http.ResponseWriter, r *http.Request) AKA HandlerFunc 變http.Handler
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		allowedOrigin := os.Getenv("FrontendPATH") // Change to your frontend URL
-		if allowedOrigin == "" {
-			allowedOrigin = "http://localhost:5173"
-		}
-		allowedOrigins := strings.Split(allowedOrigin, " ") // 用空格區分不同origin
-		origin := r.Header.Get("Origin")
-		fmt.Println(origin)
-		if slices.Contains(allowedOrigins, origin) {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-		} else {
-			w.WriteHeader(http.StatusForbidden) // 403 Forbidden
-			writeErrorJson(w, Type.MessageDisplayError{Message: fmt.Sprintf("%s CORS violated", origin)})
-			return
-		}
-		// Handle preflight requests
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
 
 // 處理新建wordSet
 func handleCreateWordSet(request Type.CreateWordSetRequest) (string, error) {
