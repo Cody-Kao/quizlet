@@ -562,7 +562,7 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
                     >
                       {/* Color bars container - giving it explicit height/width for both modes */}
                       <div className="flex h-auto min-h-20 w-full flex-col gap-4 md:w-5/6 md:flex-row xl:min-h-22">
-                        <div className="relative flex h-auto min-h-2/5 w-full items-center px-4 break-words after:absolute after:right-0 after:h-[60%] after:w-[2px] after:bg-gray-100 after:content-[''] md:min-h-full md:w-3/7">
+                        <div className="relative flex h-auto min-h-2/5 w-full items-center px-4 break-words after:absolute after:right-0 after:hidden after:h-[60%] after:w-[2px] after:bg-gray-100 after:content-[''] md:min-h-full md:w-3/7 after:md:block">
                           {editWordID === word.id ? (
                             <div className="overflow-wrap break-word relative flex w-full resize-none flex-col gap-2 break-words break-all">
                               <ContentEditable
@@ -707,7 +707,7 @@ export default function WordSet({ wordSet }: { wordSet: WordSetType }) {
                     >
                       {/* Color bars container - giving it explicit height/width for both modes */}
                       <div className="flex h-auto min-h-35 w-full flex-col gap-4 md:min-h-20 md:w-5/6 md:flex-row">
-                        <div className="relative flex h-auto min-h-2/5 w-full items-center px-4 break-words after:absolute after:right-0 after:h-[60%] after:w-[2px] after:bg-gray-100 after:content-[''] md:min-h-full md:w-3/7">
+                        <div className="relative flex h-auto min-h-2/5 w-full items-center px-4 break-words after:absolute after:right-0 after:hidden after:h-[60%] after:w-[2px] after:bg-gray-100 after:content-[''] md:min-h-full md:w-3/7 after:md:block">
                           {editWordID === word.id ? (
                             <div className="overflow-wrap break-word relative flex w-full resize-none flex-col gap-2 break-words break-all">
                               <ContentEditable

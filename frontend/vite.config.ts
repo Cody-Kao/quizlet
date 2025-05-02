@@ -5,3 +5,14 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
 });
+
+/*
+if using SWC mode, it's not currently possible to leverage on the React-Compiler, which uses bable
+{
+  babel: {
+    plugins: [
+      ["babel-plugin-react-compiler"],
+    ],
+  },
+}
+*/
