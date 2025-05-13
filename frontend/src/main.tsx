@@ -1,12 +1,13 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
 import { StrictMode } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NoticeDisplayContextProvider from "./Context/NoticeDisplayContextProvider.tsx";
 import AppProviders from "./Context/AppContextProvider.tsx";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundaryFallback from "./Components/ErrorBoundaryFallback.tsx";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./Routes/Router.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
       <NoticeDisplayContextProvider>
         <AppProviders>
           <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-            <App />
+            <RouterProvider router={router} />
           </ErrorBoundary>
         </AppProviders>
       </NoticeDisplayContextProvider>
